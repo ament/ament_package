@@ -14,17 +14,6 @@
 
 """Library for parsing package.xml and providing an object representation."""
 
-from copy import deepcopy
-import os
-import xml.dom.minidom as dom
-
-from .dependency import Dependency
-from .exceptions import InvalidPackage
-from .export import Export
-from .package import Package
-from .person import Person
-from .url import Url
-
 # set version number
 try:
     import pkg_resources
@@ -34,6 +23,8 @@ try:
         __version__ = 'unset'
 except (ImportError, OSError):
     __version__ = 'unset'
+finally:
+    del pkg_resources
 
 PACKAGE_MANIFEST_FILENAME = 'package.xml'
 
@@ -49,6 +40,7 @@ def parse_package(path):
     :raises: :exc:`InvalidPackage`
     :raises: :exc:`IOError`
     """
+    import os
     if os.path.isfile(path):
         filename = path
     elif package_exists_at(path):
@@ -79,6 +71,7 @@ def package_exists_at(path):
     :returns: True if package exists in given path, else False
     :rtype: bool
     """
+    import os
     return os.path.isdir(path) and os.path.isfile(
         os.path.join(path, PACKAGE_MANIFEST_FILENAME))
 
@@ -92,6 +85,13 @@ def parse_package_string(data, filename=None):
     :returns: return parsed :class:`Package`
     :raises: :exc:`InvalidPackage`
     """
+    from copy import deepcopy
+    import xml.dom.minidom as dom
+
+    from .export import Export
+    from .package import Package
+    from .person import Person
+    from .url import Url
     try:
         root = dom.parseString(data)
     except Exception as ex:
@@ -283,6 +283,7 @@ def _get_nodes(parent, tagname):
 
 
 def _get_node(parent, tagname):
+    from .exceptions import InvalidPackage
     nodes = _get_nodes(parent, tagname)
     if len(nodes) != 1:
         raise InvalidPackage(
@@ -291,6 +292,7 @@ def _get_node(parent, tagname):
 
 
 def _get_optional_node(parent, tagname):
+    from .exceptions import InvalidPackage
     nodes = _get_nodes(parent, tagname)
     if len(nodes) > 1:
         raise InvalidPackage(
@@ -319,6 +321,7 @@ def _get_optional_node_value(parent, tagname, default=None):
 
 def _get_node_attr(node, attr, default=False):
     # default=False means value is required
+    from .exceptions import InvalidPackage
     if node.hasAttribute(attr):
         return str(node.getAttribute(attr))
     if default is False:
@@ -329,6 +332,7 @@ def _get_node_attr(node, attr, default=False):
 
 
 def _get_dependencies(parent, tagname):
+    from .dependency import Dependency
     depends = []
     for node in _get_nodes(parent, tagname):
         depend = Dependency(_get_node_value(node))
