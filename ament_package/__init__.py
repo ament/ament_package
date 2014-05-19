@@ -41,6 +41,9 @@ def parse_package(path):
     :raises: :exc:`IOError`
     """
     import os
+
+    from .exceptions import InvalidPackage
+
     if os.path.isfile(path):
         filename = path
     elif package_exists_at(path):
@@ -72,6 +75,7 @@ def package_exists_at(path):
     :rtype: bool
     """
     import os
+
     return os.path.isdir(path) and os.path.isfile(
         os.path.join(path, PACKAGE_MANIFEST_FILENAME))
 
@@ -86,14 +90,16 @@ def parse_package_string(data, filename=None):
     :raises: :exc:`InvalidPackage`
     """
     from copy import deepcopy
-    import xml.dom.minidom as dom
+    from xml.dom import minidom
 
+    from .exceptions import InvalidPackage
     from .export import Export
     from .package import Package
     from .person import Person
     from .url import Url
+
     try:
-        root = dom.parseString(data)
+        root = minidom.parseString(data)
     except Exception as ex:
         raise InvalidPackage('The manifest contains invalid XML:\n%s' % ex)
 
@@ -284,6 +290,7 @@ def _get_nodes(parent, tagname):
 
 def _get_node(parent, tagname):
     from .exceptions import InvalidPackage
+
     nodes = _get_nodes(parent, tagname)
     if len(nodes) != 1:
         raise InvalidPackage(
@@ -293,6 +300,7 @@ def _get_node(parent, tagname):
 
 def _get_optional_node(parent, tagname):
     from .exceptions import InvalidPackage
+
     nodes = _get_nodes(parent, tagname)
     if len(nodes) > 1:
         raise InvalidPackage(
@@ -322,6 +330,7 @@ def _get_optional_node_value(parent, tagname, default=None):
 def _get_node_attr(node, attr, default=False):
     # default=False means value is required
     from .exceptions import InvalidPackage
+
     if node.hasAttribute(attr):
         return str(node.getAttribute(attr))
     if default is False:
@@ -333,6 +342,7 @@ def _get_node_attr(node, attr, default=False):
 
 def _get_dependencies(parent, tagname):
     from .dependency import Dependency
+
     depends = []
     for node in _get_nodes(parent, tagname):
         depend = Dependency(_get_node_value(node))

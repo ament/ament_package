@@ -1,4 +1,4 @@
 *.pyc
-ament_package.egg-info
-build
-dist
+/ament_package.egg-info
+/build
+/dist
