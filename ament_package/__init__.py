@@ -211,7 +211,7 @@ def parse_package_string(data, filename=None):
         for node in [n for n in export_node.childNodes
                      if n.nodeType == n.ELEMENT_NODE]:
             export = Export(str(node.tagName),
-                            _get_node_value(node, allow_xml=True))
+                            content=_get_node_value(node, allow_xml=True))
             for key, value in node.attributes.items():
                 export.attributes[str(key)] = str(value)
             exports.append(export)
