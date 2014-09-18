@@ -26,4 +26,9 @@ Ament defines metainformation for packages, their dependencies,
 and provides tooling to build these federated packages together.''',
     license='Apache License, Version 2.0',
     test_suite='test',
+    package_data={'': [
+        'template/environment_hook/*',
+        'template/package_level/*',
+        'template/prefix_level/*',
+    ]},
 )
