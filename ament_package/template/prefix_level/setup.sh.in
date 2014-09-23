@@ -104,6 +104,7 @@ for _path in $_UNIQUE_PREFIX_PATH; do
   if [ "$AMENT_SHELL" != "sh" -a -f "$_path/local_setup.$AMENT_SHELL" ]; then
     . "$_path/local_setup.$AMENT_SHELL"
   elif [ -f "$_path/local_setup.sh" ]; then
+    AMENT_CURRENT_PREFIX=$_path
     . "$_path/local_setup.sh"
   fi
 done

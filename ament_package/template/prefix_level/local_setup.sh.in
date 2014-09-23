@@ -19,14 +19,18 @@ unset _LS
 _IFS=$IFS
 IFS="
 "
+# restore AMENT_CURRENT_PREFIX for each package-level local_setup.sh file
+_AMENT_CURRENT_PREFIX=$AMENT_CURRENT_PREFIX
 for _package in $_PACKAGES; do
   if [ "$AMENT_SHELL" != "sh" -a -f "$AMENT_CURRENT_PREFIX/share/$_package/local_setup.$AMENT_SHELL" ]; then
     . "$AMENT_CURRENT_PREFIX/share/$_package/local_setup.$AMENT_SHELL"
   elif [ -f "$AMENT_CURRENT_PREFIX/share/$_package/local_setup.sh" ]; then
+    AMENT_CURRENT_PREFIX=$_AMENT_CURRENT_PREFIX
     . "$AMENT_CURRENT_PREFIX/share/$_package/local_setup.sh"
   fi
 done
 unset _package
+unset _AMENT_CURRENT_PREFIX
 IFS=$_IFS
 unset _IFS
 unset _PACKAGES

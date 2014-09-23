@@ -52,3 +52,7 @@ ament_prepend_unique_value() {
 
 # source all .sh environment hooks of this package
 @SOURCE_HOOKS@
+
+# reset AMENT_CURRENT_PREFIX after each package
+# allowing to source multiple package-level setup files
+unset AMENT_CURRENT_PREFIX
