@@ -1,6 +1,6 @@
 # generated from ament_package/template/prefix_level/setup.sh.in
 
-# since this file is sourced either use the provided AMENT_CURRENT_PREFIX
+# since this file is sourced use either the provided AMENT_CURRENT_PREFIX
 # or fall back to the destination set at configure time
 : ${AMENT_CURRENT_PREFIX:=@CMAKE_INSTALL_PREFIX@}
 
@@ -8,12 +8,7 @@
 : ${AMENT_SHELL:=sh}
 
 # find all packages under current prefix
-# Note: commands like find are stored in variables to prevent evaluation of aliases
-_FIND=find  # Variable storage is important
-_SORT=sort  # Variable storage is important
-_RESOURCES="$($_FIND "$AMENT_CURRENT_PREFIX/share/ament_parent_prefix_path" -mindepth 1 -maxdepth 1 2> /dev/null | $_SORT)"
-unset _FIND
-unset _SORT
+_RESOURCES="$(\find "$AMENT_CURRENT_PREFIX/share/ament_parent_prefix_path" -mindepth 1 -maxdepth 1 2> /dev/null | \sort)"
 
 # function to append non-duplicate values to environment variables
 # using colons as separators and avoiding leading separators
@@ -62,8 +57,6 @@ ament_cmake_environment_append_unique_value() {
 }
 
 # iterate over all ament_parent_prefix_path files
-# Note: command cat is stored in a variable to prevent evaluation of aliases
-_CAT=cat  # Variable storage is important
 _IFS=$IFS
 IFS="
 "
@@ -71,7 +64,7 @@ IFS="
 _UNIQUE_PREFIX_PATH=""
 for _resource in $_RESOURCES; do
   # read the content of the ament_parent_prefix_path file
-  _PARENT_PREFIX_PATH="$($_CAT "$_resource")"
+  _PARENT_PREFIX_PATH="$(\cat "$_resource")"
   # reverse the list
   _REVERSED_PARENT_PREFIX_PATH=""
   IFS=":"
@@ -91,7 +84,6 @@ for _resource in $_RESOURCES; do
   unset _REVERSED_PARENT_PREFIX_PATH
 done
 unset _resource
-unset _CAT
 unset _RESOURCES
 
 # append this directory to the prefix path
@@ -101,6 +93,10 @@ unset AMENT_CURRENT_PREFIX
 # source local_setup.EXT or local_setup.sh file for each prefix path
 IFS=":"
 for _path in $_UNIQUE_PREFIX_PATH; do
+  # trace output
+  if [ -n "$AMENT_TRACE_SETUP_FILES" ]; then
+    echo ". \"$_path/local_setup.$AMENT_SHELL\""
+  fi
   if [ "$AMENT_SHELL" != "sh" -a -f "$_path/local_setup.$AMENT_SHELL" ]; then
     . "$_path/local_setup.$AMENT_SHELL"
   elif [ -f "$_path/local_setup.sh" ]; then
