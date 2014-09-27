@@ -26,6 +26,7 @@ and provides tooling to build these federated packages together.''',
     test_suite='test',
     package_data={'': [
         'template/environment_hook/*',
+        'template/isolated_prefix_level/*',
         'template/package_level/*',
         'template/prefix_level/*',
     ]},

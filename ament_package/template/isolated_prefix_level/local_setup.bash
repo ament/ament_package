@@ -1,4 +1,4 @@
-# copied from ament_package/template/prefix_level/local_setup.bash
+# copied from ament_package/template/isolated_prefix_path/local_setup.bash
 
 AMENT_SHELL=bash
 

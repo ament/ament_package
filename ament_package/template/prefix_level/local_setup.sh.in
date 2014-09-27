@@ -7,7 +7,7 @@
 # set type of shell if not already set
 : ${AMENT_SHELL:=sh}
 
-# find all packages under current prefix
+# find all packages under the current prefix based on the resource index
 _PACKAGES="$(\ls "$AMENT_CURRENT_PREFIX/share/ament_index/resource_index/packages" | \sort -n)"
 
 # source local_setup.EXT or local_setup.sh file for each package
@@ -24,31 +24,31 @@ AMENT_ENVIRONMENT_HOOKS=
 for _package in $_PACKAGES; do
   # restore AMENT_CURRENT_PREFIX for each package-level local_setup file
   AMENT_CURRENT_PREFIX=$_prefix_local_setup_AMENT_CURRENT_PREFIX
+  _path="$AMENT_CURRENT_PREFIX/share/$_package/local_setup.$AMENT_SHELL"
   # trace output
   if [ -n "$AMENT_TRACE_SETUP_FILES" ]; then
-    echo ". \"$AMENT_CURRENT_PREFIX/share/$_package/local_setup.$AMENT_SHELL\""
+    echo ". \"$_path\""
   fi
-  if [ "$AMENT_SHELL" != "sh" -a -f "$AMENT_CURRENT_PREFIX/share/$_package/local_setup.$AMENT_SHELL" ]; then
-    . "$AMENT_CURRENT_PREFIX/share/$_package/local_setup.$AMENT_SHELL"
-  elif [ -f "$AMENT_CURRENT_PREFIX/share/$_package/local_setup.sh" ]; then
-    . "$AMENT_CURRENT_PREFIX/share/$_package/local_setup.sh"
+  if [ -f "$_path" ]; then
+    . "$_path"
   fi
+  unset _path
 done
 unset _package
+unset AMENT_RETURN_ENVIRONMENT_HOOKS
 unset _PACKAGES
 
-# actually source all environment hooks after sorting them
+# actually source all environment hooks after sorting them by basename
 # * convert colons to newlines
-# * sort by full path with numeric order
 # * add a second column with each path duplicated
 # * convert the second column to be just the last path element
 # * stable sort based on the content of the second column
 # * strip out the second column
-SORTED_AMENT_ENVIRONMENT_HOOKS="$(\echo "$AMENT_ENVIRONMENT_HOOKS" | \tr ":" "\n" | \sort -n | \sed 's/\(.*\)/\1 \1/' | \sed 's/\([^ ]*\) .*\/\([^\/]*\)/\1 \2/' | \sort -s -k 2 | \sed 's/\([^ ]*\).*/\1/')"
+ORDERED_AMENT_ENVIRONMENT_HOOKS="$(\echo "$AMENT_ENVIRONMENT_HOOKS" | \tr ":" "\n" | \sed 's/\(.*\)/\1 \1/' | \sed 's/\([^ ]*\) .*\/\([^\/]*\)/\1 \2/' | \sort -s -k 2 | \sed 's/\([^ ]*\).*/\1/')"
 unset AMENT_ENVIRONMENT_HOOKS
 IFS="
 "
-for _hook in $SORTED_AMENT_ENVIRONMENT_HOOKS; do
+for _hook in $ORDERED_AMENT_ENVIRONMENT_HOOKS; do
   # trace output
   if [ -n "$AMENT_TRACE_SETUP_FILES" ]; then
     echo ". \"$_hook\""
@@ -60,8 +60,7 @@ for _hook in $SORTED_AMENT_ENVIRONMENT_HOOKS; do
   fi
 done
 unset _hook
-unset SORTED_AMENT_ENVIRONMENT_HOOKS
-unset AMENT_RETURN_ENVIRONMENT_HOOKS
+unset ORDERED_AMENT_ENVIRONMENT_HOOKS
 unset _prefix_local_setup_AMENT_CURRENT_PREFIX
 IFS=$_prefix_local_setup_IFS
 unset _prefix_local_setup_IFS

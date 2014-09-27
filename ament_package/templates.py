@@ -40,6 +40,17 @@ def get_prefix_level_template_path(name):
     return os.path.join(TEMPLATE_DIRECTORY, 'prefix_level', name)
 
 
+def get_isolated_prefix_level_template_names():
+    extensions = ['bash', 'sh.in', 'zsh']
+    return ['local_setup.%s' % ext for ext in extensions] + \
+        ['_order_isolated_packages.py']
+        # + ['setup.%s' % ext for ext in extensions]
+
+
+def get_isolated_prefix_level_template_path(name):
+    return os.path.join(TEMPLATE_DIRECTORY, 'isolated_prefix_level', name)
+
+
 def configure_file(template_file, environment):
     '''
     Evaluate a .in template file used in CMake with configure_file().
@@ -69,5 +80,7 @@ def configure_string(template, environment):
     '''
     def substitute(match):
         var = match.group(0)[1:-1]
-        return environment[var]
+        if var in environment:
+            return environment[var]
+        return ''
     return re.sub('\@[a-zA-Z0-9_]+\@', substitute, template)
