@@ -10,9 +10,9 @@ AMENT_CURRENT_PREFIX=$(builtin cd -q "`dirname "${(%):-%N}"`" > /dev/null && pwd
 ament_zsh_to_array() {
   local _listname=$1
   local _dollar="$"
-  local _f="{(f)"
-  local __to_array="(\"$_dollar$_f$_listname}\")"
-  eval $_listname=$__to_array
+  local _split="{="
+  local _to_array="(\"$_dollar$_split$_listname}\")"
+  eval $_listname=$_to_array
 }
 
 # trace output
