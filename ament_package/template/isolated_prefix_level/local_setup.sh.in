@@ -20,6 +20,9 @@ IFS="
 "
 # store AMENT_CURRENT_PREFIX to restore it before each package
 _isolated_prefix_local_setup_AMENT_CURRENT_PREFIX=$AMENT_CURRENT_PREFIX
+if [ "$AMENT_SHELL" = "zsh" ]; then
+  ament_zsh_to_array _ORDERED_PACKAGES
+fi
 for _package in $_ORDERED_PACKAGES; do
   # restore AMENT_CURRENT_PREFIX for each prefix-level local_setup file
   AMENT_CURRENT_PREFIX="$_isolated_prefix_local_setup_AMENT_CURRENT_PREFIX/$_package"

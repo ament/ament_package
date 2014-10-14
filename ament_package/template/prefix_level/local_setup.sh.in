@@ -21,6 +21,9 @@ _prefix_local_setup_AMENT_CURRENT_PREFIX=$AMENT_CURRENT_PREFIX
 # skip sourcing the environment hooks and append their environment hooks
 AMENT_RETURN_ENVIRONMENT_HOOKS=1
 AMENT_ENVIRONMENT_HOOKS=
+if [ "$AMENT_SHELL" = "zsh" ]; then
+  ament_zsh_to_array _PACKAGES
+fi
 for _package in $_PACKAGES; do
   # restore AMENT_CURRENT_PREFIX for each package-level local_setup file
   AMENT_CURRENT_PREFIX=$_prefix_local_setup_AMENT_CURRENT_PREFIX
@@ -48,6 +51,9 @@ ORDERED_AMENT_ENVIRONMENT_HOOKS="$(\echo "$AMENT_ENVIRONMENT_HOOKS" | \tr ":" "\
 unset AMENT_ENVIRONMENT_HOOKS
 IFS="
 "
+if [ "$AMENT_SHELL" = "zsh" ]; then
+  ament_zsh_to_array ORDERED_AMENT_ENVIRONMENT_HOOKS
+fi
 for _hook in $ORDERED_AMENT_ENVIRONMENT_HOOKS; do
   # trace output
   if [ -n "$AMENT_TRACE_SETUP_FILES" ]; then

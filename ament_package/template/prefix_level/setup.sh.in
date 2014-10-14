@@ -25,6 +25,9 @@ ament_append_unique_value() {
   _duplicate=
   _ament_append_unique_value_IFS=$IFS
   IFS=":"
+  if [ "$AMENT_SHELL" = "zsh" ]; then
+    ament_zsh_to_array _values
+  fi
   for _item in $_values; do
     # ignore empty strings
     if [ -z "$_item" ]; then
@@ -64,12 +67,18 @@ IFS="
 "
 # this variable contains the concatenated prefix paths in reverse order
 _UNIQUE_PREFIX_PATH=""
+if [ "$AMENT_SHELL" = "zsh" ]; then
+  ament_zsh_to_array _RESOURCES
+fi
 for _resource in $_RESOURCES; do
   # read the content of the ament_parent_prefix_path file
   _PARENT_PREFIX_PATH="$(\cat "$_resource")"
   # reverse the list
   _REVERSED_PARENT_PREFIX_PATH=""
   IFS=":"
+  if [ "$AMENT_SHELL" = "zsh" ]; then
+    ament_zsh_to_array _PARENT_PREFIX_PATH
+  fi
   for _path in $_PARENT_PREFIX_PATH; do
     # avoid leading separator
     if [ -z "$_REVERSED_PARENT_PREFIX_PATH" ]; then
@@ -80,6 +89,9 @@ for _resource in $_RESOURCES; do
   done
   unset _PARENT_PREFIX_PATH
   # collect all unique parent prefix path
+  if [ "$AMENT_SHELL" = "zsh" ]; then
+    ament_zsh_to_array _REVERSED_PARENT_PREFIX_PATH
+  fi
   for _path in $_REVERSED_PARENT_PREFIX_PATH; do
     ament_append_unique_value _UNIQUE_PREFIX_PATH "$_path"
   done
@@ -94,13 +106,16 @@ unset AMENT_CURRENT_PREFIX
 
 # source local_setup.EXT or local_setup.sh file for each prefix path
 IFS=":"
+if [ "$AMENT_SHELL" = "zsh" ]; then
+  ament_zsh_to_array _UNIQUE_PREFIX_PATH
+fi
 for _path in $_UNIQUE_PREFIX_PATH; do
   # trace output
   if [ -n "$AMENT_TRACE_SETUP_FILES" ]; then
     echo ". \"$_path/local_setup.$AMENT_SHELL\""
   fi
   if [ -f "$_path/local_setup.$AMENT_SHELL" ]; then
-    if [ "$AMENT_SHELL" == "sh" ]; then
+    if [ "$AMENT_SHELL" = "sh" ]; then
       # provide AMENT_CURRENT_PREFIX to .sh files
       AMENT_CURRENT_PREFIX=$_path
     fi

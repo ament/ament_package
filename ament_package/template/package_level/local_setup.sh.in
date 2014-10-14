@@ -49,6 +49,9 @@ ament_prepend_unique_value() {
   _duplicate=
   _ament_prepend_unique_value_IFS=$IFS
   IFS=":"
+  if [ "$AMENT_SHELL" = "zsh" ]; then
+    ament_zsh_to_array _values
+  fi
   for _item in $_values; do
     # ignore empty strings
     if [ -z "$_item" ]; then
@@ -95,6 +98,9 @@ fi
 if [ -z "$AMENT_RETURN_ENVIRONMENT_HOOKS" ]; then
   _package_local_setup_IFS=$IFS
   IFS=":"
+  if [ "$AMENT_SHELL" = "zsh" ]; then
+    ament_zsh_to_array AMENT_ENVIRONMENT_HOOKS
+  fi
   for _hook in $AMENT_ENVIRONMENT_HOOKS; do
     if [ -f "$_hook" ]; then
       # do not provide a field separator for environment hooks
