@@ -7,12 +7,8 @@
 # set type of shell if not already set
 : ${AMENT_SHELL:=sh}
 
-# find all packages under the current prefix based on the direct subfolders
-#_PACKAGES="$(\find "$AMENT_CURRENT_PREFIX" -mindepth 1 -maxdepth 1 -type d -printf "%f\n" 2> /dev/null | \sort -n)"
-
 # get all packages in topological order
 _ORDERED_PACKAGES="$(@PYTHON_EXECUTABLE@ "$AMENT_CURRENT_PREFIX/_order_isolated_packages.py" "$AMENT_CURRENT_PREFIX")"
-unset _PACKAGES
 
 # source prefix-level local_setup.EXT or local_setup.sh file for each package
 _isolated_prefix_local_setup_IFS=$IFS
