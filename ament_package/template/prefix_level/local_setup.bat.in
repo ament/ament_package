@@ -1,0 +1,157 @@
+:: generated from ament_package/template/prefix_level/local_setup.bat.in
+@echo off
+if defined AMENT_TRACE_SETUP_FILES echo Inside "%~0"
+
+:: since this file is sourced use either the provided AMENT_CURRENT_PREFIX
+:: or fall back to the destination set at configure time
+set "AMENT_CURRENT_PREFIX="
+if not defined AMENT_CURRENT_PREFIX (
+  set "AMENT_CURRENT_PREFIX=@CMAKE_INSTALL_PREFIX@"
+  call:convert_forwardslash_to_backslash AMENT_CURRENT_PREFIX
+)
+
+:: set type of shell if not already set
+if not defined AMENT_SHELL (
+  set "AMENT_SHELL=bat"
+)
+
+:: find all packages under the current prefix based on the resource index
+set "_PACKAGES="
+call:list_files _PACKAGES "%AMENT_CURRENT_PREFIX%\share\ament_index\resource_index\packages"
+
+:: source local_setup.bat files for each package to collect environment hooks
+call:call_local_setups _PACKAGES
+
+:: no call the environment hooks in order
+call:call_ament_environment_hooks
+call:clear_ament_environment_hook_vars
+set "_PACKAGES="
+
+:: run any command and arugments passed
+%*
+if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
+
+:: prevent double evaluation of functions below
+if defined AMENT_TRACE_SETUP_FILES echo Leaving %~0
+goto:eof
+
+:foo
+  echo %~1
+goto:eof
+
+:: clears all the AMENT_ENVIRONMENT_HOOKS varaibles
+:clear_ament_environment_hook_vars
+  for /f "tokens=1 delims==" %%f in ('set AMENT_ENVIRONMENT_HOOKS[') do (
+    endlocal
+    set "%%f="
+  )
+goto:eof
+
+:: iterates through the environment hooks and sources them
+:call_ament_environment_hooks
+  setlocal enabledelayedexpansion
+  :: store AMENT_CURRENT_PREFIX to restore it before each package
+  set "_prefix_local_setup_AMENT_CURRENT_PREFIX=%AMENT_CURRENT_PREFIX%"
+  :: source each environment hook
+  :: TODO(wjwwood): do a stable sort by filename, not dirname
+  for /f "tokens=2 delims==" %%f in ('set AMENT_ENVIRONMENT_HOOKS[') do (
+    endlocal
+    set "AMENT_CUR_ENV_HOOKS=!%%f!"
+    call:call_hook
+  )
+goto:eof
+
+:call_hook
+  setlocal enabledelayedexpansion
+  for %%f in ("%AMENT_CUR_ENV_HOOKS:;=";"%") do (
+    endlocal
+    if exist %%f (
+      call %%f
+    )
+  )
+goto:eof
+
+:: iterates through a list of packages and sources the local_setup of each
+:: inorder to get a list of the AMENT_ENVIRONMENT_HOOKS
+:call_local_setups
+  setlocal enabledelayedexpansion
+  set "_package_list_name=%~1"
+  set "_PACKAGES=!%_package_list_name%!"
+  :: store AMENT_CURRENT_PREFIX to restore it before each package
+  set "_prefix_local_setup_AMENT_CURRENT_PREFIX=%AMENT_CURRENT_PREFIX%"
+  :: set the flag for sourced package-level local_setup files to
+  :: skip sourcing the environment hooks and append their environment hooks
+  set "AMENT_RETURN_ENVIRONMENT_HOOKS=1"
+  :: clear any hooks currently set
+  set "AMENT_ENVIRONMENT_HOOKS="
+  :: for each package, source the local_setup file if it exists
+  :: it should only append to the AMENT_ENVIRONMENT_HOOKS since the
+  :: AMENT_RETURN_ENVIRONMENT_HOOKS flag is set.
+  if "%_PACKAGES%" NEQ "" (
+    for %%a in ("%_PACKAGES:;=";"%") do (
+      if defined AMENT_TRACE_SETUP_FILES (
+        echo Getting env hooks for package "%%~a"
+      )
+      :: restore AMENT_CURRENT_PREFIX for each package-level local_setup file
+      set "AMENT_CURRENT_PREFIX=%_prefix_local_setup_AMENT_CURRENT_PREFIX%"
+      set "_path=%AMENT_CURRENT_PREFIX%\share\%%~a\local_setup.%AMENT_SHELL%"
+      :: trace output
+      if defined AMENT_TRACE_SETUP_FILES echo . "!_path!"
+      :: call if it exists
+      if exist "!_path!" call "!_path!"
+    )
+  )
+  :: export all of the new variables
+  for /f "tokens=1,2 delims==" %%f in ('set AMENT_ENVIRONMENT_HOOKS[') do (
+    endlocal
+    set "%%f=%%g"
+  )
+goto:eof
+
+:: converts any forwardslashes / to backslashes \ in the given variable
+:convert_forwardslash_to_backslash
+  setlocal enabledelayedexpansion
+  set "ret=%~1"
+  set "ret=!%ret%!"
+  set "ret=%ret:/=\%"
+  (endlocal
+    set "%~1=%ret%"
+  )
+goto:eof
+
+:: function to list the files in a directory in alphabetical order
+:: use list_files_sorted if you need numerical ordering
+:list_files
+  setlocal enabledelayedexpansion
+  :: create an array with filenames in right order
+  set "_files="
+  for /f %%f in ('dir /b "%~2"') do (
+    if "!_files!" NEQ "" (set "_files=!_files!;")
+    set "_files=!_files!%%~f"
+  )
+  :: return result by reference
+  (endlocal
+    set "%~1=%_files%")
+goto:eof
+
+:: function to list the files in a directory in numerical order
+:: http://stackoverflow.com/a/18749126
+:list_files_sorted
+  setlocal enabledelayedexpansion
+  :: create an array with filenames in right order
+  for /f %%f in ('dir /b "%~2"') do (
+     for /F "delims=-" %%n in ("%%f") do (
+        set "number=00000%%n"
+        set "file[!number:~-6!]=%%f"
+     )
+  )
+  :: process the filenames in right order
+  set "_files="
+  for /F "tokens=2 delims==" %%f in ('set file[') do (
+    if "%_files%" NEQ "" set "_files=%_files%;"
+    set "_files=%_files%%f%"
+  )
+  :: return result by reference
+  (endlocal
+    set "%~1=%_files%")
+goto:eof
