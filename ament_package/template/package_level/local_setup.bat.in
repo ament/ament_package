@@ -5,21 +5,23 @@ if defined AMENT_TRACE_SETUP_FILES echo Inside %~0
 :: or fall back to the destination set at configure time
 if not defined AMENT_CURRENT_PREFIX (
   set "AMENT_CURRENT_PREFIX=@CMAKE_INSTALL_PREFIX@"
+  call:convert_forwardslash_to_backslash AMENT_CURRENT_PREFIX
 )
 
 :: unset AMENT_ENVIRONMENT_HOOKS
 :: if not appending to them for return
-if "%AMENT_RETURN_ENVIRONMENT_HOOKS%" == "" (
-    set "AMENT_ENVIRONMENT_HOOKS="
+if not defined AMENT_RETURN_ENVIRONMENT_HOOKS (
+    set "AMENT_ENVIRONMENT_HOOKS[@PROJECT_NAME@]="
 )
 
 :: this is a list all environment hooks of this package
-@ENVIRONMENT_HOOKS_BAT@
+@ENVIRONMENT_HOOKS@
 
 :: source all shell-specific environment hooks of this package
 :: if not returning them
-if "%AMENT_RETURN_ENVIRONMENT_HOOKS%" == "" (
-  for %%a in ("%AMENT_ENVIRONMENT_HOOKS:;=";"%") do (
+if not defined AMENT_RETURN_ENVIRONMENT_HOOKS (
+  for %%a in ("%AMENT_ENVIRONMENT_HOOKS[@PROJECT_NAME@]:;=";"%") do (
+    echo %%~a
     if exist "%%a" call "%%a"
   )
 )
@@ -34,6 +36,17 @@ if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
 
 :: prevent second eval of functions below
 if defined AMENT_TRACE_SETUP_FILES echo Leaving %~0
+goto:eof
+
+:: converts any forwardslashes / to backslashes \ in the given variable
+:convert_forwardslash_to_backslash
+  setlocal enabledelayedexpansion
+  set "ret=%~1"
+  set "ret=!%ret%!"
+  set "ret=%ret:/=\%"
+  (endlocal
+    set "%~1=%ret%"
+  )
 goto:eof
 
 :: function to append values to environment variables
@@ -54,25 +67,3 @@ goto:eof
     set "%~1=%_list%"
   )
 goto:eof
-
-:: function to prepend non-duplicate values to environment variables
-:: using colons as separators and avoiding trailing separators
-:ament_prepend_unique_value
-  setlocal enabledelayedexpansion
-  :: arguments
-  set "_listname=%~1"
-  set "_value=%~2"
-  :: expand the list variable
-  set "_list=!%_listname%!"
-  :: check if the list contains the value
-  set "_is_duplicate="
-  for %%a in ("%_list:;=";"%") do (
-    if "%%a" == "%_value%" set "_is_duplicate=1"
-  )
-  :: if it is not a duplicate prepend it
-  if "%_is_duplicate%" == "" (
-    if "%_list%" NEQ "" set ";%_list%"
-    set "_list=%_value%%_list%"
-  )
-goto:eof
-
