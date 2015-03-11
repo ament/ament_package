@@ -21,7 +21,6 @@ if not defined AMENT_RETURN_ENVIRONMENT_HOOKS (
 :: if not returning them
 if not defined AMENT_RETURN_ENVIRONMENT_HOOKS (
   for %%a in ("%AMENT_ENVIRONMENT_HOOKS[@PROJECT_NAME@]:;=";"%") do (
-    echo %%~a
     if exist "%%a" call "%%a"
   )
 )
