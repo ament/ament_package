@@ -17,6 +17,7 @@ if not defined AMENT_SHELL (
 
 :: find all packages under the current prefix based on the resource index
 set "_PACKAGES="
+set "AMENT_CUR_ENV_HOOKS="
 call:list_files _PACKAGES "%AMENT_CURRENT_PREFIX%\share\ament_index\resource_index\packages"
 
 :: source local_setup.bat files for each package to collect environment hooks
@@ -25,6 +26,7 @@ call:call_local_setups _PACKAGES
 :: no call the environment hooks in order
 call:call_ament_environment_hooks
 call:clear_ament_environment_hook_vars
+set "AMENT_CUR_ENV_HOOKS="
 set "_PACKAGES="
 
 :: run any command and arugments passed
@@ -56,7 +58,7 @@ goto:eof
   :: TODO(wjwwood): do a stable sort by filename, not dirname
   for /f "tokens=2 delims==" %%f in ('set AMENT_ENVIRONMENT_HOOKS[') do (
     endlocal
-    set "AMENT_CUR_ENV_HOOKS=!%%f!"
+    set "AMENT_CUR_ENV_HOOKS=%%f"
     call:call_hook
   )
 goto:eof
