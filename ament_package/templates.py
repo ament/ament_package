@@ -23,7 +23,12 @@ def get_environment_hook_template_path(name):
 
 
 def get_package_level_template_names():
-    return ['local_setup.%s.in' % ext for ext in ['bash', 'sh', 'zsh', 'bat']]
+    return ['local_setup.%s.in' % ext for ext in [
+        'bash',
+        'bat',
+        'sh',
+        'zsh',
+    ]]
 
 
 def get_package_level_template_path(name):
@@ -31,7 +36,12 @@ def get_package_level_template_path(name):
 
 
 def get_prefix_level_template_names():
-    extensions = ['bash', 'sh.in', 'zsh', 'bat.in']
+    extensions = [
+        'bash',
+        'bat.in',
+        'sh.in',
+        'zsh',
+    ]
     return ['local_setup.%s' % ext for ext in extensions] + \
         ['setup.%s' % ext for ext in extensions]
 
@@ -41,10 +51,15 @@ def get_prefix_level_template_path(name):
 
 
 def get_isolated_prefix_level_template_names():
-    extensions = ['bash', 'sh.in', 'zsh', 'bat.in']
+    extensions = [
+        'bash',
+        'bat.in',
+        'sh.in',
+        'zsh',
+    ]
     return ['local_setup.%s' % ext for ext in extensions] + \
         ['_order_isolated_packages.py']
-        # + ['setup.%s' % ext for ext in extensions]
+    # + ['setup.%s' % ext for ext in extensions]
 
 
 def get_isolated_prefix_level_template_path(name):
