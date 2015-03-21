@@ -1,0 +1,68 @@
+:: generated from ament_package/template/package_level/local_setup.bat.in
+if defined AMENT_TRACE_SETUP_FILES echo Inside %~0
+
+:: since this file is called use either the provided AMENT_CURRENT_PREFIX
+:: or fall back to the destination set at configure time
+if not defined AMENT_CURRENT_PREFIX (
+  set "AMENT_CURRENT_PREFIX=@CMAKE_INSTALL_PREFIX@"
+  call:convert_forwardslash_to_backslash AMENT_CURRENT_PREFIX
+)
+
+:: unset AMENT_ENVIRONMENT_HOOKS
+:: if not appending to them for return
+if not defined AMENT_RETURN_ENVIRONMENT_HOOKS (
+    set "AMENT_ENVIRONMENT_HOOKS[@PROJECT_NAME@]="
+)
+
+:: this is a list all environment hooks of this package
+@ENVIRONMENT_HOOKS@
+
+:: source all shell-specific environment hooks of this package
+:: if not returning them
+if not defined AMENT_RETURN_ENVIRONMENT_HOOKS (
+  for %%a in ("%AMENT_ENVIRONMENT_HOOKS[@PROJECT_NAME@]:;=";"%") do (
+    if exist "%%a" call "%%a"
+  )
+)
+
+:: reset AMENT_CURRENT_PREFIX after each package
+:: allowing to source multiple package-level setup files
+set "AMENT_CURRENT_PREFIX="
+
+:: run any command and arugments passed
+%*
+if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
+
+:: prevent second eval of functions below
+if defined AMENT_TRACE_SETUP_FILES echo Leaving %~0
+goto:eof
+
+:: converts any forwardslashes / to backslashes \ in the given variable
+:convert_forwardslash_to_backslash
+  setlocal enabledelayedexpansion
+  set "ret=%~1"
+  set "ret=!%ret%!"
+  set "ret=%ret:/=\%"
+  (endlocal
+    set "%~1=%ret%"
+  )
+goto:eof
+
+:: function to append values to environment variables
+:: using semi-colons as separators and avoiding trailing separators
+:ament_append_value
+  setlocal enabledelayedexpansion
+  :: arguments (%~1 and %~2 are the first and second arguments)
+  set "_listname=%~1"
+  set "_value=%~2"
+  :: expand the first argument
+  set "_list=!%_listname%!"
+  :: if not empty, append a semi-colon
+  if "%_list%" NEQ "" set "_list=%_list%;"
+  :: concatenate new value
+  set "_list=%_list%%_value%"
+  :: return by reference (%~1 is the first argument)
+  (endlocal
+    set "%~1=%_list%"
+  )
+goto:eof
