@@ -15,6 +15,7 @@
 import os
 import re
 
+IS_WINDOWS = os.name == 'nt'
 TEMPLATE_DIRECTORY = os.path.join(os.path.dirname(__file__), 'template')
 
 
@@ -22,44 +23,53 @@ def get_environment_hook_template_path(name):
     return os.path.join(TEMPLATE_DIRECTORY, 'environment_hook', name)
 
 
-def get_package_level_template_names():
-    return ['local_setup.%s.in' % ext for ext in [
+def get_package_level_template_names(all_platforms=False):
+    names = ['local_setup.%s.in' % ext for ext in [
         'bash',
         'bat',
         'sh',
         'zsh',
     ]]
+    if not all_platforms:
+        names = [name for name in names if _is_platform_specific_extension(name)]
+    return names
 
 
 def get_package_level_template_path(name):
     return os.path.join(TEMPLATE_DIRECTORY, 'package_level', name)
 
 
-def get_prefix_level_template_names():
+def get_prefix_level_template_names(all_platforms=False):
     extensions = [
         'bash',
         'bat.in',
         'sh.in',
         'zsh',
     ]
-    return ['local_setup.%s' % ext for ext in extensions] + \
+    names = ['local_setup.%s' % ext for ext in extensions] + \
         ['setup.%s' % ext for ext in extensions]
+    if not all_platforms:
+        names = [name for name in names if _is_platform_specific_extension(name)]
+    return names
 
 
 def get_prefix_level_template_path(name):
     return os.path.join(TEMPLATE_DIRECTORY, 'prefix_level', name)
 
 
-def get_isolated_prefix_level_template_names():
+def get_isolated_prefix_level_template_names(all_platforms=False):
     extensions = [
         'bash',
         'bat.in',
         'sh.in',
         'zsh',
     ]
-    return ['local_setup.%s' % ext for ext in extensions] + \
+    names = ['local_setup.%s' % ext for ext in extensions] + \
         ['_order_isolated_packages.py']
     # + ['setup.%s' % ext for ext in extensions]
+    if not all_platforms:
+        names = [name for name in names if _is_platform_specific_extension(name)]
+    return names
 
 
 def get_isolated_prefix_level_template_path(name):
@@ -99,3 +109,15 @@ def configure_string(template, environment):
             return environment[var]
         return ''
     return re.sub('\@[a-zA-Z0-9_]+\@', substitute, template)
+
+
+def _is_platform_specific_extension(filename):
+    if filename.endswith('.in'):
+        filename = filename[:-3]
+    if not IS_WINDOWS and filename.endswith('.bat'):
+        # On non-Windows system, ignore .bat
+        return False
+    if IS_WINDOWS and not filename.endswith('.bat'):
+        # On Windows, ignore anything other than .bat
+        return False
+    return True
