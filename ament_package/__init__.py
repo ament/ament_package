@@ -21,10 +21,10 @@ try:
         __version__ = pkg_resources.require('ament_package')[0].version
     except pkg_resources.DistributionNotFound:
         __version__ = 'unset'
-except (ImportError, OSError):
+    finally:
+        del pkg_resources
+except ImportError:
     __version__ = 'unset'
-finally:
-    del pkg_resources
 
 PACKAGE_MANIFEST_FILENAME = 'package.xml'
 
