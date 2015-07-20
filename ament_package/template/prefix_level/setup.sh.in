@@ -84,7 +84,7 @@ for _resource in $_RESOURCES; do
     if [ -z "$_REVERSED_PARENT_PREFIX_PATH" ]; then
       _REVERSED_PARENT_PREFIX_PATH=$_path
     else
-      _REVERSED_PARENT_PREFIX_PATH=$_REVERSED_PARENT_PREFIX_PATH:\$$_path
+      _REVERSED_PARENT_PREFIX_PATH=$_REVERSED_PARENT_PREFIX_PATH:$_path
     fi
   done
   unset _PARENT_PREFIX_PATH
