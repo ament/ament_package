@@ -1,128 +1,44 @@
-# generated from ament_package/template/prefix_level/setup.sh.in
+:: generated from ament_package/template/prefix_level/setup.bat.in
+@echo off
 
-# since this file is sourced use either the provided AMENT_CURRENT_PREFIX
-# or fall back to the destination set at configure time
-: ${AMENT_CURRENT_PREFIX:=@CMAKE_INSTALL_PREFIX@}
+:: set the same directory as this file
+set "AMENT_CURRENT_PREFIX=%~dp0"
 
-# set type of shell if not already set
-: ${AMENT_SHELL:=sh}
+:: set type of shell if not already set
+if not defined AMENT_SHELL (
+  set "AMENT_SHELL=bat"
+)
 
-# find parent prefix path files for all packages under the current prefix
-_RESOURCES="$(\find "$AMENT_CURRENT_PREFIX/share/ament_index/resource_index/parent_prefix_path" -mindepth 1 -maxdepth 1 2> /dev/null | \sort)"
+:: find parent prefix path files for all packages under the current prefix
+call:list_files_sorted _RESOURCES "%AMENT_CURRENT_PREFIX%\share\ament_index\resource_index\parent_prefix_path"
 
-# function to append non-duplicate values to environment variables
-# using colons as separators and avoiding leading separators
-ament_append_unique_value() {
-  # arguments
-  _listname=$1
-  _value=$2
-  #echo "listname $_listname"
-  #eval echo "list value \$$_listname"
-  #echo "value $_value"
-
-  # check if the list contains the value
-  eval _values=\$$_listname
-  _duplicate=
-  _ament_append_unique_value_IFS=$IFS
-  IFS=":"
-  if [ "$AMENT_SHELL" = "zsh" ]; then
-    ament_zsh_to_array _values
-  fi
-  for _item in $_values; do
-    # ignore empty strings
-    if [ -z "$_item" ]; then
-      continue
-    fi
-    if [ $_item = $_value ]; then
-      _duplicate=1
-    fi
-  done
-  unset _item
-
-  # append only non-duplicates
-  if [ -z "$_duplicate" ]; then
-    # avoid leading separator
-    if [ -z "$_values" ]; then
-      eval $_listname=$_value
-      #eval echo "set list \$$_listname"
-    else
-      # field separator must not be a colon
-      unset IFS
-      eval $_listname=\$$_listname:$_value
-      #eval echo "append list \$$_listname"
-    fi
-  fi
-  IFS=$_ament_append_unique_value_IFS
-  unset _ament_append_unique_value_IFS
-  unset _duplicate
-  unset _values
-
-  unset _value
-  unset _listname
+if "%_RESOURCES%" NEQ "" (
+  for %%a in ("%_RESOURCES:;=";"%") do (
+    echo To do: call local setup files for the parent workspaces listed in "%%~a"
+  }
 }
 
-# iterate over all parent_prefix_path files
-_prefix_setup_IFS=$IFS
-IFS="
-"
-# this variable contains the concatenated prefix paths in reverse order
-_UNIQUE_PREFIX_PATH=""
-if [ "$AMENT_SHELL" = "zsh" ]; then
-  ament_zsh_to_array _RESOURCES
-fi
-for _resource in $_RESOURCES; do
-  # read the content of the parent_prefix_path file
-  _PARENT_PREFIX_PATH="$(\cat "$_resource")"
-  # reverse the list
-  _REVERSED_PARENT_PREFIX_PATH=""
-  IFS=":"
-  if [ "$AMENT_SHELL" = "zsh" ]; then
-    ament_zsh_to_array _PARENT_PREFIX_PATH
-  fi
-  for _path in $_PARENT_PREFIX_PATH; do
-    # avoid leading separator
-    if [ -z "$_REVERSED_PARENT_PREFIX_PATH" ]; then
-      _REVERSED_PARENT_PREFIX_PATH=$_path
-    else
-      _REVERSED_PARENT_PREFIX_PATH=$_path:$_REVERSED_PARENT_PREFIX_PATH
-    fi
-  done
-  unset _PARENT_PREFIX_PATH
-  # collect all unique parent prefix path
-  if [ "$AMENT_SHELL" = "zsh" ]; then
-    ament_zsh_to_array _REVERSED_PARENT_PREFIX_PATH
-  fi
-  for _path in $_REVERSED_PARENT_PREFIX_PATH; do
-    ament_append_unique_value _UNIQUE_PREFIX_PATH "$_path"
-  done
-  unset _REVERSED_PARENT_PREFIX_PATH
-done
-unset _resource
-unset _RESOURCES
+echo To do: call local setup files for this workspace
+goto:eof
 
-# append this directory to the prefix path
-ament_append_unique_value _UNIQUE_PREFIX_PATH "$AMENT_CURRENT_PREFIX"
-unset AMENT_CURRENT_PREFIX
-
-# source local_setup.EXT or local_setup.sh file for each prefix path
-IFS=":"
-if [ "$AMENT_SHELL" = "zsh" ]; then
-  ament_zsh_to_array _UNIQUE_PREFIX_PATH
-fi
-for _path in $_UNIQUE_PREFIX_PATH; do
-  # trace output
-  if [ -n "$AMENT_TRACE_SETUP_FILES" ]; then
-    echo ". \"$_path/local_setup.$AMENT_SHELL\""
-  fi
-  if [ -f "$_path/local_setup.$AMENT_SHELL" ]; then
-    if [ "$AMENT_SHELL" = "sh" ]; then
-      # provide AMENT_CURRENT_PREFIX to .sh files
-      AMENT_CURRENT_PREFIX=$_path
-    fi
-    . "$_path/local_setup.$AMENT_SHELL"
-  fi
-done
-unset _path
-IFS=$_prefix_setup_IFS
-unset _prefix_setup_IFS
-unset _UNIQUE_PREFIX_PATH
+:: function to list the files in a directory in numerical order
+:: http://stackoverflow.com/a/18749126
+:list_files_sorted
+  setlocal enabledelayedexpansion
+  :: create an array with filenames in right order
+  for /f %%f in ('dir /b "%~2"') do (
+     for /F "delims=-" %%n in ("%%f") do (
+        set "number=00000%%n"
+        set "file[!number:~-6!]=%%f"
+     )
+  )
+  :: process the filenames in right order
+  set "_files="
+  for /F "tokens=2 delims==" %%f in ('set file[') do (
+    if "%_files%" NEQ "" set "_files=%_files%;"
+    set "_files=%_files%%f%"
+  )
+  :: return result by reference
+  (endlocal
+    set "%~1=%_files%")
+goto:eof

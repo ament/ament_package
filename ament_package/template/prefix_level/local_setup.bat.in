@@ -23,7 +23,7 @@ call:list_files _PACKAGES "%AMENT_CURRENT_PREFIX%\share\ament_index\resource_ind
 :: source local_setup.bat files for each package to collect environment hooks
 call:call_local_setups _PACKAGES
 
-:: no call the environment hooks in order
+:: now call the environment hooks in order
 call:call_ament_environment_hooks
 call:clear_ament_environment_hook_vars
 set "AMENT_CUR_ENV_HOOKS="
