@@ -2,13 +2,9 @@
 @echo off
 if defined AMENT_TRACE_SETUP_FILES echo Inside "%~0"
 
-:: since this file is sourced use either the provided AMENT_CURRENT_PREFIX
-:: or fall back to the destination set at configure time
-set "AMENT_CURRENT_PREFIX="
-if not defined AMENT_CURRENT_PREFIX (
-  set "AMENT_CURRENT_PREFIX=@CMAKE_INSTALL_PREFIX@"
-  call:convert_forwardslash_to_backslash AMENT_CURRENT_PREFIX
-)
+:: use the directory in which the .bat file resides, more info about %~dp0 at:
+:: http://stackoverflow.com/a/112135
+set "AMENT_CURRENT_PREFIX=%~dp0"
 
 :: set type of shell if not already set
 if not defined AMENT_SHELL (
