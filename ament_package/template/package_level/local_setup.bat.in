@@ -1,4 +1,6 @@
 :: generated from ament_package/template/package_level/local_setup.bat.in
+@echo off
+
 if defined AMENT_TRACE_SETUP_FILES echo Inside %~0
 
 :: since this file is called use either the provided AMENT_CURRENT_PREFIX
