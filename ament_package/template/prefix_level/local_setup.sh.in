@@ -43,11 +43,12 @@ unset _PACKAGES
 
 # actually source all environment hooks after sorting them by basename
 # * convert colons to newlines
-# * add a second column with each path duplicated
+# * add a second column with each path duplicated,
+#   use colons to separate column to allow spaces in paths
 # * convert the second column to be just the last path element
 # * stable sort based on the content of the second column
 # * strip out the second column
-ORDERED_AMENT_ENVIRONMENT_HOOKS="$(\echo "$AMENT_ENVIRONMENT_HOOKS" | \tr ":" "\n" | \sed 's/\(.*\)/\1 \1/' | \sed 's/\([^ ]*\) .*\/\([^\/]*\)/\1 \2/' | \sort -s -k 2 | \sed 's/\([^ ]*\).*/\1/')"
+ORDERED_AMENT_ENVIRONMENT_HOOKS="$(\echo "$AMENT_ENVIRONMENT_HOOKS" | \tr ":" "\n" | \sed 's/\(.*\)/\1:\1/' | \sed 's/\([^:]*\):.*\/\([^\/]*\)/\1:\2/' | \sort -s -k 2 -t ":" | \sed 's/\([^:]*\).*/\1/')"
 unset AMENT_ENVIRONMENT_HOOKS
 IFS="
 "

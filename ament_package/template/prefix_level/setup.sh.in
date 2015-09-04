@@ -43,12 +43,12 @@ ament_append_unique_value() {
   if [ -z "$_duplicate" ]; then
     # avoid leading separator
     if [ -z "$_values" ]; then
-      eval $_listname=$_value
+      eval $_listname=\"$_value\"
       #eval echo "set list \$$_listname"
     else
       # field separator must not be a colon
       unset IFS
-      eval $_listname=\$$_listname:$_value
+      eval $_listname=\"\$$_listname:$_value\"
       #eval echo "append list \$$_listname"
     fi
   fi
