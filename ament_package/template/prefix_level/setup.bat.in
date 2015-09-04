@@ -1,6 +1,8 @@
 :: generated from ament_package/template/prefix_level/setup.bat.in
 @echo off
 
+if defined AMENT_TRACE_SETUP_FILES echo Inside %~0
+
 :: set the same directory as this file
 set "AMENT_CURRENT_PREFIX=%~dp0"
 
@@ -19,6 +21,9 @@ if "%_RESOURCES%" NEQ "" (
 }
 
 echo To do: call local setup files for this workspace
+
+:: prevent second eval of functions below
+if defined AMENT_TRACE_SETUP_FILES echo Leaving %~0
 goto:eof
 
 :: function to list the files in a directory in numerical order

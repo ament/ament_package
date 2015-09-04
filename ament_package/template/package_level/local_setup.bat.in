@@ -1,4 +1,6 @@
 :: generated from ament_package/template/package_level/local_setup.bat.in
+@echo off
+
 if defined AMENT_TRACE_SETUP_FILES echo Inside %~0
 
 :: since this file is called use either the provided AMENT_CURRENT_PREFIX
@@ -21,7 +23,7 @@ if not defined AMENT_RETURN_ENVIRONMENT_HOOKS (
 :: if not returning them
 if not defined AMENT_RETURN_ENVIRONMENT_HOOKS (
   for %%a in ("%AMENT_ENVIRONMENT_HOOKS[@PROJECT_NAME@]:;=";"%") do (
-    if exist "%%a" call "%%a"
+    if exist %%a call %%a
   )
 )
 
