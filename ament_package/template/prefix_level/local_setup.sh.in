@@ -71,4 +71,5 @@ unset ORDERED_AMENT_ENVIRONMENT_HOOKS
 unset _prefix_local_setup_AMENT_CURRENT_PREFIX
 IFS=$_prefix_local_setup_IFS
 unset _prefix_local_setup_IFS
+unset AMENT_SHELL
 unset AMENT_CURRENT_PREFIX

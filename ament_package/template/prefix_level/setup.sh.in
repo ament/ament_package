@@ -104,6 +104,8 @@ unset _RESOURCES
 ament_append_unique_value _UNIQUE_PREFIX_PATH "$AMENT_CURRENT_PREFIX"
 unset AMENT_CURRENT_PREFIX
 
+# store AMENT_SHELL to restore it after each prefix
+_prefix_setup_AMENT_SHELL=$AMENT_SHELL
 # source local_setup.EXT or local_setup.sh file for each prefix path
 IFS=":"
 if [ "$AMENT_SHELL" = "zsh" ]; then
@@ -120,9 +122,13 @@ for _path in $_UNIQUE_PREFIX_PATH; do
       AMENT_CURRENT_PREFIX=$_path
     fi
     . "$_path/local_setup.$AMENT_SHELL"
+    # restore AMENT_SHELL after each prefix-level local_setup file
+    AMENT_SHELL=$_prefix_setup_AMENT_SHELL
   fi
 done
 unset _path
 IFS=$_prefix_setup_IFS
 unset _prefix_setup_IFS
+unset _prefix_setup_AMENT_SHELL
 unset _UNIQUE_PREFIX_PATH
+unset AMENT_SHELL
