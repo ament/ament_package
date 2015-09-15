@@ -53,7 +53,7 @@ def parse_package(path):
                           (path, PACKAGE_MANIFEST_FILENAME))
     else:
         raise IOError("Path '%s' is neither a directory containing a '%s' "
-                      " file nor a file" % (path, PACKAGE_MANIFEST_FILENAME))
+                      "file nor a file" % (path, PACKAGE_MANIFEST_FILENAME))
 
     with open(filename, 'r') as f:
         try:
