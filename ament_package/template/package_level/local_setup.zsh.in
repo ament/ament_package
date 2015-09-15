@@ -31,6 +31,8 @@ if [ -z "$AMENT_RETURN_ENVIRONMENT_HOOKS" ]; then
   unset AMENT_ENVIRONMENT_HOOKS
 fi
 
+# restore AMENT_CURRENT_PREFIX before evaluating the environment hooks
+AMENT_CURRENT_PREFIX=$_package_local_setup_AMENT_CURRENT_PREFIX
 # list all environment hooks of this package
 @ENVIRONMENT_HOOKS@
 # source all shell-specific environment hooks of this package
