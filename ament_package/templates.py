@@ -117,7 +117,7 @@ def _is_platform_specific_extension(filename):
     if not IS_WINDOWS and filename.endswith('.bat'):
         # On non-Windows system, ignore .bat
         return False
-    if IS_WINDOWS and not filename.endswith('.bat'):
-        # On Windows, ignore anything other than .bat
+    if IS_WINDOWS and os.path.splitext(filename)[1] not in ['.bat', '.py']:
+        # On Windows, ignore anything other than .bat and .py
         return False
     return True
