@@ -1,49 +1,107 @@
 :: generated from ament_package/template/prefix_level/setup.bat.in
 @echo off
 
-if defined AMENT_TRACE_SETUP_FILES echo Inside %~0
-
-:: set the same directory as this file
+:: get the directory of this file without trailing backslash
+:: more info about %~dp0 at: http://stackoverflow.com/a/112135
 set "AMENT_CURRENT_PREFIX=%~dp0"
-
-:: set type of shell if not already set
-if not defined AMENT_SHELL (
-  set "AMENT_SHELL=bat"
-)
+if %AMENT_CURRENT_PREFIX:~-1%==\ set AMENT_CURRENT_PREFIX=%AMENT_CURRENT_PREFIX:~0,-1%
 
 :: find parent prefix path files for all packages under the current prefix
-call:list_files_sorted _RESOURCES "%AMENT_CURRENT_PREFIX%\share\ament_index\resource_index\parent_prefix_path"
+call:list_files _RESOURCE_NAMES "%AMENT_CURRENT_PREFIX%\share\ament_index\resource_index\parent_prefix_path"
 
-if "%_RESOURCES%" NEQ "" (
-  for %%a in ("%_RESOURCES:;=";"%") do (
-    echo To do: call local setup files for the parent workspaces listed in "%%~a"
-  }
-}
+:: get the unique parent prefix path in reverse order
+call:get_prefix_path _UNIQUE_REVERSE_PREFIX_PATH "%_RESOURCE_NAMES%"
 
-echo To do: call local setup files for this workspace
+:: append this directory to the prefix path
+call:ament_append_unique_value _UNIQUE_REVERSE_PREFIX_PATH "%AMENT_CURRENT_PREFIX%"
+set "AMENT_CURRENT_PREFIX="
 
-:: prevent second eval of functions below
-if defined AMENT_TRACE_SETUP_FILES echo Leaving %~0
+:: source local_setup.bat file for each prefix path
+for %%p in ("%_UNIQUE_REVERSE_PREFIX_PATH:;=";"%") do (
+  if defined AMENT_TRACE_SETUP_FILES echo call "%%~p\local_setup.bat"
+  call "%%~p\local_setup.bat"
+)
+set "_UNIQUE_REVERSE_PREFIX_PATH="
+set "_RESOURCE_NAMES="
+
+:: end of script
 goto:eof
 
-:: function to list the files in a directory in numerical order
-:: http://stackoverflow.com/a/18749126
-:list_files_sorted
+
+:: list the files in a directory in alphabetical order
+:: first parameter: variable to store the result list in
+:: second parameter: directory to list files in
+:list_files
   setlocal enabledelayedexpansion
-  :: create an array with filenames in right order
-  for /f %%f in ('dir /b "%~2"') do (
-     for /F "delims=-" %%n in ("%%f") do (
-        set "number=00000%%n"
-        set "file[!number:~-6!]=%%f"
-     )
+  set "files="
+  for /f %%f in ('dir /b /on "%~2"') do (
+    if "!files!" NEQ "" (set "files=!files!;")
+    set "files=!files!%%~f"
   )
-  :: process the filenames in right order
-  set "_files="
-  for /F "tokens=2 delims==" %%f in ('set file[') do (
-    if "%_files%" NEQ "" set "_files=%_files%;"
-    set "_files=%_files%%f%"
+  endlocal & (
+    set "%~1=%files%"
   )
-  :: return result by reference
-  (endlocal
-    set "%~1=%_files%")
+goto:eof
+
+:: iterate over all parent_prefix_path files and get the unique parent prefix path
+:: first parameter: variable to store the reversed result list in
+:: second parameter: the resource names
+:get_prefix_path
+  setlocal enabledelayedexpansion
+  set "prefix_path="
+  set "resource_names=%~2"
+  if "%resource_names%" NEQ "" (
+    for %%a in ("%resource_names:;=";"%") do (
+      :: reset variable otherwise it keeps its previous value if the file is empty
+      set "parent_prefix_path="
+      set /p parent_prefix_path=<%AMENT_CURRENT_PREFIX%\share\ament_index\resource_index\parent_prefix_path\%%~a
+
+      if "!parent_prefix_path!" NEQ "" (
+        :: reverse list
+        set "reversed_parent_prefix_path="
+        for %%p in ("!parent_prefix_path:;=";"!") do (
+          if "!reversed_parent_prefix_path!" NEQ "" (
+            set "reversed_parent_prefix_path=;!reversed_parent_prefix_path!"
+          )
+          set "reversed_parent_prefix_path=%%~p!reversed_parent_prefix_path!"
+        )
+
+        :: append unique prefix path
+        for %%p in ("!reversed_parent_prefix_path:;=";"!") do (
+          call:ament_append_unique_value prefix_path "%%~p"
+        )
+      )
+    )
+  )
+  endlocal & (
+    set "%~1=%prefix_path%"
+  )
+goto:eof
+
+:: function to append non-duplicate values to environment variables
+:: using colons as separators and avoiding trailing separators
+:ament_append_unique_value
+  setlocal enabledelayedexpansion
+  :: arguments
+  set "_listname=%~1"
+  set "_value=%~2"
+  :: expand the list variable
+  set "_list=!%_listname%!"
+  :: check if the list contains the value
+  set "_is_duplicate="
+  if "%_list%" NEQ "" (
+    for %%v in ("%_list:;=";"%") do (
+      if "%%~v" == "%_value%" set "_is_duplicate=1"
+    )
+  )
+  :: if it is not a duplicate append it
+  if "%_is_duplicate%" == "" (
+    if "%_list%" NEQ "" (
+      set "_list=!_list!;"
+    )
+    set "_list=!_list!%_value%"
+  )
+  endlocal & (
+    set "%~1=%_list%"
+  )
 goto:eof
