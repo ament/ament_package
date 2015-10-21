@@ -2,106 +2,116 @@
 @echo off
 
 :: get the directory of this file without trailing backslash
-:: more info about %~dp0 at: http://stackoverflow.com/a/112135
-set "AMENT_CURRENT_PREFIX=%~dp0"
-if %AMENT_CURRENT_PREFIX:~-1%==\ set AMENT_CURRENT_PREFIX=%AMENT_CURRENT_PREFIX:~0,-1%
+set "_current_prefix_path=%~dp0"
+if %_current_prefix_path:~-1%==\ set _current_prefix_path=%_current_prefix_path:~0,-1%
 
 :: find parent prefix path files for all packages under the current prefix
-call:list_files _RESOURCE_NAMES "%AMENT_CURRENT_PREFIX%\share\ament_index\resource_index\parent_prefix_path"
+call:list_files _resource_names "%_current_prefix_path%\share\ament_index\resource_index\parent_prefix_path"
 
 :: get the unique parent prefix path in reverse order
-call:get_prefix_path _UNIQUE_REVERSE_PREFIX_PATH "%_RESOURCE_NAMES%"
+call:get_prefix_path _unique_reverse_prefix_path "%_current_prefix_path%" "%_resource_names%"
+set "_resource_names="
 
 :: append this directory to the prefix path
-call:ament_append_unique_value _UNIQUE_REVERSE_PREFIX_PATH "%AMENT_CURRENT_PREFIX%"
-set "AMENT_CURRENT_PREFIX="
+call:ament_append_unique_value _unique_reverse_prefix_path "%_current_prefix_path%"
+set "_current_prefix_path="
 
 :: source local_setup.bat file for each prefix path
-for %%p in ("%_UNIQUE_REVERSE_PREFIX_PATH:;=";"%") do (
-  if defined AMENT_TRACE_SETUP_FILES echo call "%%~p\local_setup.bat"
-  call "%%~p\local_setup.bat"
+for %%p in ("%_unique_reverse_prefix_path:;=";"%") do (
+  call:call_file "%%~p\local_setup.bat"
 )
-set "_UNIQUE_REVERSE_PREFIX_PATH="
-set "_RESOURCE_NAMES="
+set "_unique_reverse_prefix_path="
 
 :: end of script
 goto:eof
 
 
-:: list the files in a directory in alphabetical order
-:: first parameter: variable to store the result list in
-:: second parameter: directory to list files in
+:: List the files in a directory in alphabetical order.
+:: first argument: the name of the result variable
+:: second argument: the directory
 :list_files
   setlocal enabledelayedexpansion
   set "files="
-  for /f %%f in ('dir /b /on "%~2"') do (
-    if "!files!" NEQ "" (set "files=!files!;")
+  for /f %%f in ('dir /b "%~2"') do (
+    if "!files!" NEQ "" set "files=!files!;"
     set "files=!files!%%~f"
   )
   endlocal & (
+    :: set result variable in parent scope
     set "%~1=%files%"
   )
 goto:eof
 
-:: iterate over all parent_prefix_path files and get the unique parent prefix path
-:: first parameter: variable to store the reversed result list in
-:: second parameter: the resource names
+:: Iterate over all parent_prefix_path files and
+:: get the unique parent prefix path in reverse order.
+:: first argument: the name of the result variable
+:: second parameter: the prefix path names
+:: third parameter: the resource names
 :get_prefix_path
   setlocal enabledelayedexpansion
   set "prefix_path="
-  set "resource_names=%~2"
+  set "resource_names=%~3"
   if "%resource_names%" NEQ "" (
     for %%a in ("%resource_names:;=";"%") do (
       :: reset variable otherwise it keeps its previous value if the file is empty
       set "parent_prefix_path="
-      set /p parent_prefix_path=<%AMENT_CURRENT_PREFIX%\share\ament_index\resource_index\parent_prefix_path\%%~a
+      set /p parent_prefix_path=<%~2\share\ament_index\resource_index\parent_prefix_path\%%~a
 
       if "!parent_prefix_path!" NEQ "" (
         :: reverse list
-        set "reversed_parent_prefix_path="
+        set "reverse_ppp="
         for %%p in ("!parent_prefix_path:;=";"!") do (
-          if "!reversed_parent_prefix_path!" NEQ "" (
-            set "reversed_parent_prefix_path=;!reversed_parent_prefix_path!"
-          )
-          set "reversed_parent_prefix_path=%%~p!reversed_parent_prefix_path!"
+          if "!reverse_ppp!" NEQ "" set "reverse_ppp=;!reverse_ppp!"
+          set "reverse_ppp=%%~p!reverse_ppp!"
         )
 
         :: append unique prefix path
-        for %%p in ("!reversed_parent_prefix_path:;=";"!") do (
+        for %%p in ("!reverse_ppp:;=";"!") do (
           call:ament_append_unique_value prefix_path "%%~p"
         )
       )
     )
   )
   endlocal & (
+    :: set result variable in parent scope
     set "%~1=%prefix_path%"
   )
 goto:eof
 
-:: function to append non-duplicate values to environment variables
-:: using colons as separators and avoiding trailing separators
+:: Append non-duplicate values to environment variables
+:: using semicolons as separators and avoiding trailing separators.
+:: first argument: the name of the result variable
+:: second argument: the value
 :ament_append_unique_value
   setlocal enabledelayedexpansion
   :: arguments
-  set "_listname=%~1"
-  set "_value=%~2"
+  set "listname=%~1"
+  set "value=%~2"
   :: expand the list variable
-  set "_list=!%_listname%!"
+  set "list=!%listname%!"
   :: check if the list contains the value
-  set "_is_duplicate="
-  if "%_list%" NEQ "" (
-    for %%v in ("%_list:;=";"%") do (
-      if "%%~v" == "%_value%" set "_is_duplicate=1"
+  set "is_duplicate="
+  if "%list%" NEQ "" (
+    for %%v in ("%list:;=";"%") do (
+      if "%%~v" == "%value%" set "is_duplicate=1"
     )
   )
   :: if it is not a duplicate append it
-  if "%_is_duplicate%" == "" (
-    if "%_list%" NEQ "" (
-      set "_list=!_list!;"
-    )
-    set "_list=!_list!%_value%"
+  if "%is_duplicate%" == "" (
+    :: if not empty, append a semi-colon
+    if "!list!" NEQ "" set "list=!list!;"
+    :: append the value
+    set "list=!list!%value%"
   )
   endlocal & (
-    set "%~1=%_list%"
+    :: set result variable in parent scope
+    set "%~1=%list%"
   )
+goto:eof
+
+:: Call the specified batch file and output the name when tracing is requested.
+:: first argument: the batch file
+:call_file
+  if "%AMENT_TRACE_SETUP_FILES%" NEQ "" echo call "%~1"
+  if exist "%~1" call "%~1%"
 goto:eof

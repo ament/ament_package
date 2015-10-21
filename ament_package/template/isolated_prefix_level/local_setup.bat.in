@@ -1,42 +1,40 @@
 :: generated from ament_package/template/isolated_prefix_level/local_setup.bat.in
 @echo off
 
-:: get the directory of this file without trailing backslash
-:: more info about %~dp0 at: http://stackoverflow.com/a/112135
-set "AMENT_CURRENT_PREFIX=%~dp0"
-if %AMENT_CURRENT_PREFIX:~-1%==\ set AMENT_CURRENT_PREFIX=%AMENT_CURRENT_PREFIX:~0,-1%
-
 :: get all packages in topological order
-call:ament_get_ordered_packages _ORDERED_PACKAGES "%AMENT_CURRENT_PREFIX%"
+call:ament_get_ordered_packages _ordered_packages "%~dp0"
 
-:: source prefix-level local_setup.bat file for each package
-if "%_ORDERED_PACKAGES%" NEQ "" (
-  for %%p in ("%_ORDERED_PACKAGES:;=";"%") do (
+:: source local_setup.bat file for each package
+if "%_ordered_packages%" NEQ "" (
+  for %%p in ("%_ordered_packages:;=";"%") do (
     :: bypass prefix-level local_setup file for performance reasons
-    call:call_file "%AMENT_CURRENT_PREFIX%\%%~p\share\%%~p\local_setup.bat"
+    call:call_file "%~dp0%%~p\share\%%~p\local_setup.bat"
   )
-  set "_ORDERED_PACKAGES="
+  set "_ordered_packages="
 )
-set "AMENT_CURRENT_PREFIX="
 
-:: end of script
 goto:eof
 
 
-:: function to get the packages in this space in topological order
-:: packages are separated by a semicolon delimiter.
+:: Get the package names in topological order
+:: using semicolons as separators and avoiding leading separators.
+:: first argument: the name of the result variable
+:: second argument: the base path to look for packages
 :ament_get_ordered_packages
   setlocal enabledelayedexpansion
   set "ordered_packages="
-  for /f %%p in ('""@PYTHON_EXECUTABLE@" "%AMENT_CURRENT_PREFIX%\_order_isolated_packages.py" "%~2""') do (
+  for /f %%p in ('""@PYTHON_EXECUTABLE@" "%~dp0_order_isolated_packages.py" "%~2\""') do (
     if "!ordered_packages!" NEQ "" set "ordered_packages=!ordered_packages!;"
     set "ordered_packages=!ordered_packages!%%p"
   )
   endlocal & (
+    :: set result variable in parent scope
     set "%~1=%ordered_packages%"
   )
 goto:eof
 
+:: Call the specified batch file and output the name when tracing is requested.
+:: first argument: the batch file
 :call_file
   if "%AMENT_TRACE_SETUP_FILES%" NEQ "" echo call "%~1"
   if exist "%~1" call "%~1%"
