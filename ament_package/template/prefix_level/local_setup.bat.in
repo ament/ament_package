@@ -1,43 +1,31 @@
 :: generated from ament_package/template/prefix_level/local_setup.bat.in
 @echo off
-if defined AMENT_TRACE_SETUP_FILES echo Inside "%~0"
 
-:: use the directory in which the .bat file resides, more info about %~dp0 at:
-:: http://stackoverflow.com/a/112135
+:: get the directory of this file without trailing backslash
+:: more info about %~dp0 at: http://stackoverflow.com/a/112135
 set "AMENT_CURRENT_PREFIX=%~dp0"
-
-:: set type of shell if not already set
-if not defined AMENT_SHELL (
-  set "AMENT_SHELL=bat"
-)
+if %AMENT_CURRENT_PREFIX:~-1%==\ set AMENT_CURRENT_PREFIX=%AMENT_CURRENT_PREFIX:~0,-1%
 
 :: find all packages under the current prefix based on the resource index
 set "_PACKAGES="
-set "AMENT_CUR_ENV_HOOKS="
 call:list_files _PACKAGES "%AMENT_CURRENT_PREFIX%\share\ament_index\resource_index\packages"
 
 :: source local_setup.bat files for each package to collect environment hooks
+set "AMENT_CUR_ENV_HOOKS="
 call:call_local_setups _PACKAGES
 
-:: now call the environment hooks in order
+:: call the environment hooks in order
 call:call_ament_environment_hooks
 call:clear_ament_environment_hook_vars
 set "AMENT_CUR_ENV_HOOKS="
 set "_PACKAGES="
+set "AMENT_CURRENT_PREFIX="
 
-:: run any command and arugments passed
-%*
-if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
-
-:: prevent double evaluation of functions below
-if defined AMENT_TRACE_SETUP_FILES echo Leaving %~0
+:: end of script
 goto:eof
 
-:foo
-  echo %~1
-goto:eof
 
-:: clears all the AMENT_ENVIRONMENT_HOOKS varaibles
+:: clear all the AMENT_ENVIRONMENT_HOOKS variables
 :clear_ament_environment_hook_vars
   for /f "tokens=1 delims==" %%f in ('set AMENT_ENVIRONMENT_HOOKS[') do (
     endlocal
@@ -63,6 +51,8 @@ goto:eof
   setlocal enabledelayedexpansion
   for %%f in ("%AMENT_CUR_ENV_HOOKS:;=";"%") do (
     endlocal
+    :: trace output
+    if defined AMENT_TRACE_SETUP_FILES echo call %%f
     if exist %%f (
       call %%f
     )
@@ -87,14 +77,11 @@ goto:eof
   :: AMENT_RETURN_ENVIRONMENT_HOOKS flag is set.
   if "%_PACKAGES%" NEQ "" (
     for %%a in ("%_PACKAGES:;=";"%") do (
-      if defined AMENT_TRACE_SETUP_FILES (
-        echo Getting env hooks for package "%%~a"
-      )
       :: restore AMENT_CURRENT_PREFIX for each package-level local_setup file
       set "AMENT_CURRENT_PREFIX=%_prefix_local_setup_AMENT_CURRENT_PREFIX%"
-      set "_path=%AMENT_CURRENT_PREFIX%\share\%%~a\local_setup.%AMENT_SHELL%"
+      set "_path=%AMENT_CURRENT_PREFIX%\share\%%~a\local_setup.bat"
       :: trace output
-      if defined AMENT_TRACE_SETUP_FILES echo . "!_path!"
+      if defined AMENT_TRACE_SETUP_FILES echo call "!_path!"
       :: call if it exists
       if exist "!_path!" call "!_path!"
     )

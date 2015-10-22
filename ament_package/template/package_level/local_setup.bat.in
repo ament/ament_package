@@ -1,8 +1,6 @@
 :: generated from ament_package/template/package_level/local_setup.bat.in
 @echo off
 
-if defined AMENT_TRACE_SETUP_FILES echo Inside %~0
-
 :: since this file is called use either the provided AMENT_CURRENT_PREFIX
 :: or fall back to the destination set at configure time
 if not defined AMENT_CURRENT_PREFIX (
@@ -13,17 +11,19 @@ if not defined AMENT_CURRENT_PREFIX (
 :: unset AMENT_ENVIRONMENT_HOOKS
 :: if not appending to them for return
 if not defined AMENT_RETURN_ENVIRONMENT_HOOKS (
-    set "AMENT_ENVIRONMENT_HOOKS[@PROJECT_NAME@]="
+  set "AMENT_ENVIRONMENT_HOOKS[@PROJECT_NAME@]="
 )
 
 :: this is a list all environment hooks of this package
 @ENVIRONMENT_HOOKS@
-
 :: source all shell-specific environment hooks of this package
 :: if not returning them
 if not defined AMENT_RETURN_ENVIRONMENT_HOOKS (
   for %%a in ("%AMENT_ENVIRONMENT_HOOKS[@PROJECT_NAME@]:;=";"%") do (
-    if exist %%a call %%a
+    if defined AMENT_TRACE_SETUP_FILES echo call %%a
+    if exist %%a (
+      call %%a
+    )
   )
 )
 
@@ -31,15 +31,10 @@ if not defined AMENT_RETURN_ENVIRONMENT_HOOKS (
 :: allowing to source multiple package-level setup files
 set "AMENT_CURRENT_PREFIX="
 
-:: run any command and arugments passed
-%*
-if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
-
 :: prevent second eval of functions below
-if defined AMENT_TRACE_SETUP_FILES echo Leaving %~0
 goto:eof
 
-:: converts any forwardslashes / to backslashes \ in the given variable
+:: converts any forward slashes / to backslashes \ in the given variable
 :convert_forwardslash_to_backslash
   setlocal enabledelayedexpansion
   set "ret=%~1"

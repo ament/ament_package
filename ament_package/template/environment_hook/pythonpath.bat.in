@@ -1,10 +1,7 @@
 :: generated from ament_package/template/environment_hook/pythonpath.bat.in
-if defined AMENT_TRACE_SETUP_FILES echo Inside %~0
 
 call:ament_prepend_unique_value PYTHONPATH "%AMENT_CURRENT_PREFIX%\@PYTHON_INSTALL_DIR@"
 
-if defined AMENT_TRACE_SETUP_FILES set PYTHONPATH
-if defined AMENT_TRACE_SETUP_FILES echo Leaving %~0
 goto:eof
 
 :: function to prepend non-duplicate values to environment variables

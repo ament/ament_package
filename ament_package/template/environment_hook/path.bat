@@ -1,10 +1,7 @@
 :: copied from ament_package/template/environment_hook/path.bat
-if defined AMENT_TRACE_SETUP_FILES echo Inside %~0
 
 call:ament_prepend_unique_value PATH "%AMENT_CURRENT_PREFIX%\bin"
 
-if defined AMENT_TRACE_SETUP_FILES set PATH
-if defined AMENT_TRACE_SETUP_FILES echo Leaving %~0
 goto:eof
 
 :: function to prepend non-duplicate values to environment variables
