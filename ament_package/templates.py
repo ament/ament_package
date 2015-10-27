@@ -47,7 +47,8 @@ def get_prefix_level_template_names(all_platforms=False):
         'zsh',
     ]
     names = ['local_setup.%s' % ext for ext in extensions] + \
-        ['setup.%s' % ext for ext in extensions]
+        ['setup.%s' % ext for ext in extensions] + \
+        ['_order_packages.py']
     if not all_platforms:
         names = [name for name in names if _is_platform_specific_extension(name)]
     return names
