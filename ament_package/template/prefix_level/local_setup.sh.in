@@ -7,26 +7,21 @@
 # set type of shell if not already set
 : ${AMENT_SHELL:=sh}
 
-# find all packages under the current prefix based on the resource index
-_PACKAGES="$(\ls "$AMENT_CURRENT_PREFIX/share/ament_index/resource_index/packages" | \sort -n)"
+# get all packages in topological order
+_ORDERED_PACKAGES="$(@PYTHON_EXECUTABLE@ "$AMENT_CURRENT_PREFIX/_order_packages.py" "$AMENT_CURRENT_PREFIX")"
 
-# source local_setup.EXT or local_setup.sh file for each package
-# just to collect all environment hooks
+# source prefix-level local_setup.EXT or local_setup.sh file for each package
 _prefix_local_setup_IFS=$IFS
 IFS="
 "
 # store AMENT_CURRENT_PREFIX to restore it before each package
 _prefix_local_setup_AMENT_CURRENT_PREFIX=$AMENT_CURRENT_PREFIX
-# set the flag for sourced package-level local_setup files to
-# skip sourcing the environment hooks and append their environment hooks
-AMENT_RETURN_ENVIRONMENT_HOOKS=1
-AMENT_ENVIRONMENT_HOOKS=
 if [ "$AMENT_SHELL" = "zsh" ]; then
-  ament_zsh_to_array _PACKAGES
+  ament_zsh_to_array _ORDERED_PACKAGES
 fi
-for _package in $_PACKAGES; do
-  # restore AMENT_CURRENT_PREFIX for each package-level local_setup file
-  AMENT_CURRENT_PREFIX=$_prefix_local_setup_AMENT_CURRENT_PREFIX
+for _package in $_ORDERED_PACKAGES; do
+  # restore AMENT_CURRENT_PREFIX for each prefix-level local_setup file
+  AMENT_CURRENT_PREFIX="$_prefix_local_setup_AMENT_CURRENT_PREFIX"
   _path="$AMENT_CURRENT_PREFIX/share/$_package/local_setup.$AMENT_SHELL"
   # trace output
   if [ -n "$AMENT_TRACE_SETUP_FILES" ]; then
@@ -38,38 +33,9 @@ for _package in $_PACKAGES; do
   unset _path
 done
 unset _package
-unset AMENT_RETURN_ENVIRONMENT_HOOKS
-unset _PACKAGES
+unset _ORDERED_PACKAGES
 
-# actually source all environment hooks after sorting them by basename
-# * convert colons to newlines
-# * add a second column with each path duplicated,
-#   use colons to separate column to allow spaces in paths
-# * convert the second column to be just the last path element
-# * stable sort based on the content of the second column
-# * strip out the second column
-ORDERED_AMENT_ENVIRONMENT_HOOKS="$(\echo "$AMENT_ENVIRONMENT_HOOKS" | \tr ":" "\n" | \sed 's/\(.*\)/\1:\1/' | \sed 's/\([^:]*\):.*\/\([^\/]*\)/\1:\2/' | \sort -s -k 2 -t ":" | \sed 's/\([^:]*\).*/\1/')"
-unset AMENT_ENVIRONMENT_HOOKS
-IFS="
-"
-if [ "$AMENT_SHELL" = "zsh" ]; then
-  ament_zsh_to_array ORDERED_AMENT_ENVIRONMENT_HOOKS
-fi
-for _hook in $ORDERED_AMENT_ENVIRONMENT_HOOKS; do
-  # trace output
-  if [ -n "$AMENT_TRACE_SETUP_FILES" ]; then
-    echo ". \"$_hook\""
-  fi
-  if [ -f "$_hook" ]; then
-    # restore AMENT_CURRENT_PREFIX for each environment hook
-    AMENT_CURRENT_PREFIX=$_prefix_local_setup_AMENT_CURRENT_PREFIX
-    . "$_hook"
-  fi
-done
-unset _hook
-unset ORDERED_AMENT_ENVIRONMENT_HOOKS
 unset _prefix_local_setup_AMENT_CURRENT_PREFIX
 IFS=$_prefix_local_setup_IFS
 unset _prefix_local_setup_IFS
-unset AMENT_SHELL
 unset AMENT_CURRENT_PREFIX
