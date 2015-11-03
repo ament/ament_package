@@ -21,8 +21,16 @@ goto:eof
 :: second argument: the base path to look for packages
 :ament_get_ordered_packages
   setlocal enabledelayedexpansion
+
+  :: use the Python executable known at configure time
+  set "ament_python_executable=@PYTHON_EXECUTABLE@"
+  :: allow overriding it with a custom location
+  if "%AMENT_PYTHON_EXECUTABLE%" NEQ "" (
+    set "ament_python_executable=%AMENT_PYTHON_EXECUTABLE%"
+  )
+
   set "ordered_packages="
-  for /f %%p in ('""@PYTHON_EXECUTABLE@" "%~dp0_order_packages.py" "%~2\""') do (
+  for /f %%p in ('""%ament_python_executable%" "%~dp0_order_packages.py" "%~2\""') do (
     if "!ordered_packages!" NEQ "" set "ordered_packages=!ordered_packages!;"
     set "ordered_packages=!ordered_packages!%%p"
   )
