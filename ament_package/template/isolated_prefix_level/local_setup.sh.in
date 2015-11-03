@@ -7,8 +7,20 @@
 # set type of shell if not already set
 : ${AMENT_SHELL:=sh}
 
+# use the Python executable known at configure time
+_ament_python_executable="@PYTHON_EXECUTABLE@"
+# allow overriding it with a custom location
+if [ -n "$AMENT_PYTHON_EXECUTABLE" ]; then
+  _ament_python_executable="$AMENT_PYTHON_EXECUTABLE"
+fi
+# if the Python executable doesn't exist try another fall back
+if [ ! -f "$_ament_python_executable" ]; then
+  _ament_python_executable="/usr/bin/env python3"
+fi
+
 # get all packages in topological order
-_ORDERED_PACKAGES="$(@PYTHON_EXECUTABLE@ "$AMENT_CURRENT_PREFIX/_order_isolated_packages.py" "$AMENT_CURRENT_PREFIX")"
+_ORDERED_PACKAGES="$($_ament_python_executable "$AMENT_CURRENT_PREFIX/_order_isolated_packages.py" "$AMENT_CURRENT_PREFIX")"
+unset _ament_python_executable
 
 # source prefix-level local_setup.EXT or local_setup.sh file for each package
 _isolated_prefix_local_setup_IFS=$IFS
