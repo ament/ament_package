@@ -32,8 +32,8 @@ if [ -z "$AMENT_RETURN_ENVIRONMENT_HOOKS" ]; then
   for _hook in $AMENT_ENVIRONMENT_HOOKS; do
     # restore AMENT_CURRENT_PREFIX for each environment hook
     AMENT_CURRENT_PREFIX=$_package_local_setup_AMENT_CURRENT_PREFIX
-    # do not provide a field separator for environment hooks
-    unset IFS
+    # restore IFS before sourcing other files
+    IFS=$_package_local_setup_IFS
     . "$_hook"
   done
   unset _hook
