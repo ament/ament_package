@@ -103,12 +103,12 @@ if [ -z "$AMENT_RETURN_ENVIRONMENT_HOOKS" ]; then
   fi
   for _hook in $AMENT_ENVIRONMENT_HOOKS; do
     if [ -f "$_hook" ]; then
+      # restore IFS before sourcing other files
+      IFS=$_package_local_setup_IFS
       # trace output
       if [ -n "$AMENT_TRACE_SETUP_FILES" ]; then
         echo ". \"$_hook\""
       fi
-      # do not provide a field separator for environment hooks
-      unset IFS
       . "$_hook"
     fi
   done

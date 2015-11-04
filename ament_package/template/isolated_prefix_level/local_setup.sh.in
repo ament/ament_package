@@ -34,6 +34,8 @@ fi
 for _package in $_ORDERED_PACKAGES; do
   # restore AMENT_CURRENT_PREFIX for each prefix-level local_setup file
   AMENT_CURRENT_PREFIX="$_isolated_prefix_local_setup_AMENT_CURRENT_PREFIX/$_package"
+  # restore IFS before sourcing other files
+  IFS=$_isolated_prefix_local_setup_IFS
   # bypass prefix-level local_setup file for performance reasons
   _path="$AMENT_CURRENT_PREFIX/share/$_package/local_setup.$AMENT_SHELL"
   # trace output
