@@ -222,8 +222,13 @@ def parse_package_string(data, filename=None):
         pkg.exports = exports
 
     # verify that no unsupported tags and attributes are present
+    valid_root_attributes = [
+        'format',
+        'xmlns:xsi',
+        'xsi:noNamespaceSchemaLocation'
+    ]
     unknown_root_attributes = [attr for attr in root.attributes.keys()
-                               if str(attr) != 'format']
+                               if str(attr) not in valid_root_attributes]
     if unknown_root_attributes:
         errors.append("The 'package' tag must not have the following "
                       "attributes: %s" % ', '.join(unknown_root_attributes))
