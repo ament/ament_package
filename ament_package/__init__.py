@@ -101,7 +101,11 @@ def parse_package_string(data, filename=None):
     try:
         root = minidom.parseString(data)
     except Exception as ex:
-        raise InvalidPackage('The manifest contains invalid XML:\n%s' % ex)
+        if filename is not None:
+            msg = "The manifest '%s' contains invalid XML:\n" % filename
+        else:
+            msg = 'The manifest contains invalid XML:\n'
+        raise InvalidPackage(msg + str(ex))
 
     pkg = Package(filename)
 
