@@ -15,7 +15,13 @@ if [ -n "$AMENT_PYTHON_EXECUTABLE" ]; then
 fi
 # if the Python executable doesn't exist try another fall back
 if [ ! -f "$_ament_python_executable" ]; then
-  _ament_python_executable="/usr/bin/env python3"
+  if /usr/bin/env python3 --version > /dev/null
+  then
+    _ament_python_executable=`/usr/bin/env python3 -c "import sys; print(sys.executable)"`
+  else
+    echo error: unable to find fallback python3 executable
+    return 1
+  fi
 fi
 
 # get all packages in topological order
