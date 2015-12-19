@@ -54,21 +54,15 @@ goto:eof
   if "%resource_names%" NEQ "" (
     for %%a in ("%resource_names:;=";"%") do (
       :: reset variable otherwise it keeps its previous value if the file is empty
-      set "parent_prefix_path="
-      set /p parent_prefix_path=<%~2\share\ament_index\resource_index\parent_prefix_path\%%~a
+      set "reverse_ppp="
+      for /f "tokens=1 delims=" %%p in (%~2\share\ament_index\resource_index\parent_prefix_path\%%~a) do (
+        if "!reverse_ppp!" NEQ "" set "reverse_ppp=;!reverse_ppp!"
+        set "reverse_ppp=%%~p!reverse_ppp!"
+      )
 
-      if "!parent_prefix_path!" NEQ "" (
-        :: reverse list
-        set "reverse_ppp="
-        for %%p in ("!parent_prefix_path:;=";"!") do (
-          if "!reverse_ppp!" NEQ "" set "reverse_ppp=;!reverse_ppp!"
-          set "reverse_ppp=%%~p!reverse_ppp!"
-        )
-
-        :: append unique prefix path
-        for %%p in ("!reverse_ppp:;=";"!") do (
-          call:ament_append_unique_value prefix_path "%%~p"
-        )
+      :: append unique prefix path
+      for %%p in ("!reverse_ppp:;=";"!") do (
+        call:ament_append_unique_value prefix_path "%%~p"
       )
     )
   )
