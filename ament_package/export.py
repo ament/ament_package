@@ -16,7 +16,7 @@
 class Export(object):
     __slots__ = ['tagname', 'attributes', 'content']
 
-    def __init__(self, tagname, attributes=None, content=None):
+    def __init__(self, tagname, *, attributes=None, content=None):
         self.tagname = tagname
         self.attributes = dict(attributes) if attributes else {}
         self.content = content

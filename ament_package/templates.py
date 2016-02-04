@@ -39,7 +39,7 @@ def get_package_level_template_path(name):
     return os.path.join(TEMPLATE_DIRECTORY, 'package_level', name)
 
 
-def get_prefix_level_template_names(all_platforms=False):
+def get_prefix_level_template_names(*, all_platforms=False):
     extensions = [
         'bash',
         'bat.in',
@@ -58,7 +58,7 @@ def get_prefix_level_template_path(name):
     return os.path.join(TEMPLATE_DIRECTORY, 'prefix_level', name)
 
 
-def get_isolated_prefix_level_template_names(all_platforms=False):
+def get_isolated_prefix_level_template_names(*, all_platforms=False):
     extensions = [
         'bash',
         'bat.in',

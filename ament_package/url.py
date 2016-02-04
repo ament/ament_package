@@ -16,9 +16,9 @@
 class Url(object):
     __slots__ = ['url', 'type']
 
-    def __init__(self, url, type_=None):
+    def __init__(self, url, *, url_type=None):
         self.url = url
-        self.type = type_
+        self.type = url_type
 
     def __str__(self):
         return self.url
