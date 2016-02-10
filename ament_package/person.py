@@ -20,7 +20,7 @@ from .exceptions import InvalidPackage
 class Person(object):
     __slots__ = ['name', 'email']
 
-    def __init__(self, name, email=None):
+    def __init__(self, name, *, email=None):
         self.name = name
         self.email = email
 

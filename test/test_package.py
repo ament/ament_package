@@ -51,7 +51,7 @@ class PackageTest(unittest.TestCase):
         self.assertEqual([], pack.conflicts)
         self.assertEqual([], pack.replaces)
         self.assertEqual([], pack.exports)
-        pack = Package('foo',
+        pack = Package(filename='foo',
                        name='bar',
                        version='0.0.0',
                        licenses=['BSD'],
@@ -76,7 +76,7 @@ class PackageTest(unittest.TestCase):
         self.assertRaises(TypeError, Dependency, 'foo', unknownattribute=42)
 
     def test_init_kwargs_string(self):
-        pack = Package('foo',
+        pack = Package(filename='foo',
                        name='bar',
                        package_format='1',
                        version='0.0.0',
@@ -125,7 +125,7 @@ class PackageTest(unittest.TestCase):
 
     def test_validate_package(self):
         maint = self.get_maintainer()
-        pack = Package('foo',
+        pack = Package(filename='foo',
                        name='bar_2go',
                        package_format='1',
                        version='0.0.0',

@@ -44,7 +44,7 @@ class Package(object):
         'filename'
     ]
 
-    def __init__(self, filename=None, **kwargs):
+    def __init__(self, *, filename=None, **kwargs):
         """
         Constructor.
 

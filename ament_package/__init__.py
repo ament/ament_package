@@ -57,7 +57,7 @@ def parse_package(path):
 
     with open(filename, 'r') as f:
         try:
-            return parse_package_string(f.read(), filename)
+            return parse_package_string(f.read(), filename=filename)
         except InvalidPackage as e:
             e.args = [
                 "Invalid package manifest '%s': %s" %
@@ -80,7 +80,7 @@ def package_exists_at(path):
         os.path.join(path, PACKAGE_MANIFEST_FILENAME))
 
 
-def parse_package_string(data, filename=None):
+def parse_package_string(data, *, filename=None):
     """
     Parse package.xml string contents.
 
@@ -107,7 +107,7 @@ def parse_package_string(data, filename=None):
             msg = 'The manifest contains invalid XML:\n'
         raise InvalidPackage(msg + str(ex))
 
-    pkg = Package(filename)
+    pkg = Package(filename=filename)
 
     # verify unique root node
     nodes = _get_nodes(root, 'package')
@@ -145,7 +145,7 @@ def parse_package_string(data, filename=None):
     for node in maintainers:
         pkg.maintainers.append(Person(
             _get_node_value(node, apply_str=False),
-            _get_node_attr(node, 'email')
+            email=_get_node_attr(node, 'email')
         ))
 
     # urls with optional type
@@ -153,7 +153,7 @@ def parse_package_string(data, filename=None):
     for node in urls:
         pkg.urls.append(Url(
             _get_node_value(node),
-            _get_node_attr(node, 'type', default='website')
+            url_type=_get_node_attr(node, 'type', default='website')
         ))
 
     # authors with optional email
@@ -161,7 +161,7 @@ def parse_package_string(data, filename=None):
     for node in authors:
         pkg.authors.append(Person(
             _get_node_value(node, apply_str=False),
-            _get_node_attr(node, 'email', default=None)
+            email=_get_node_attr(node, 'email', default=None)
         ))
 
     # at least one license
@@ -321,7 +321,7 @@ def _get_optional_node(parent, tagname):
     return nodes[0] if nodes else None
 
 
-def _get_node_value(node, allow_xml=False, apply_str=True):
+def _get_node_value(node, *, allow_xml=False, apply_str=True):
     if allow_xml:
         value = (''.join([n.toxml()
                           for n in node.childNodes])).strip(' \n\r\t')
@@ -333,14 +333,14 @@ def _get_node_value(node, allow_xml=False, apply_str=True):
     return value
 
 
-def _get_optional_node_value(parent, tagname, default=None):
+def _get_optional_node_value(parent, tagname, *, default=None):
     node = _get_optional_node(parent, tagname)
     if node is None:
         return default
     return _get_node_value(node)
 
 
-def _get_node_attr(node, attr, default=False):
+def _get_node_attr(node, attr, *, default=False):
     # default=False means value is required
     from .exceptions import InvalidPackage
 
@@ -360,6 +360,6 @@ def _get_dependencies(parent, tagname):
     for node in _get_nodes(parent, tagname):
         depend = Dependency(_get_node_value(node))
         for attr in [s for s in depend.__slots__ if s != 'name']:
-            setattr(depend, attr, _get_node_attr(node, attr, None))
+            setattr(depend, attr, _get_node_attr(node, attr, default=None))
         depends.append(depend)
     return depends
