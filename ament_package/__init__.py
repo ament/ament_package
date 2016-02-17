@@ -61,7 +61,7 @@ def parse_package(path):
         except InvalidPackage as e:
             e.args = [
                 "Invalid package manifest '%s': %s" %
-                (filename, e.message)]
+                (filename, e)]
             raise
 
 
