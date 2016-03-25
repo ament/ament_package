@@ -13,14 +13,14 @@
 # limitations under the License.
 
 import os
+import pkg_resources
 import re
 
 IS_WINDOWS = os.name == 'nt'
-TEMPLATE_DIRECTORY = os.path.join(os.path.dirname(__file__), 'template')
 
 
 def get_environment_hook_template_path(name):
-    return os.path.join(TEMPLATE_DIRECTORY, 'environment_hook', name)
+    return pkg_resources.resource_filename('ament_package', 'template/environment_hook/' + name)
 
 
 def get_package_level_template_names(all_platforms=False):
@@ -36,7 +36,7 @@ def get_package_level_template_names(all_platforms=False):
 
 
 def get_package_level_template_path(name):
-    return os.path.join(TEMPLATE_DIRECTORY, 'package_level', name)
+    return pkg_resources.resource_filename('ament_package', 'template/package_level/' + name)
 
 
 def get_prefix_level_template_names(*, all_platforms=False):
@@ -55,7 +55,7 @@ def get_prefix_level_template_names(*, all_platforms=False):
 
 
 def get_prefix_level_template_path(name):
-    return os.path.join(TEMPLATE_DIRECTORY, 'prefix_level', name)
+    return pkg_resources.resource_filename('ament_package', 'template/prefix_level/' + name)
 
 
 def get_isolated_prefix_level_template_names(*, all_platforms=False):
@@ -74,7 +74,7 @@ def get_isolated_prefix_level_template_names(*, all_platforms=False):
 
 
 def get_isolated_prefix_level_template_path(name):
-    return os.path.join(TEMPLATE_DIRECTORY, 'isolated_prefix_level', name)
+    return pkg_resources.resource_filename('ament_package', 'template/isolated_prefix_level/' + name)
 
 
 def configure_file(template_file, environment):
