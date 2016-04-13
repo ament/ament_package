@@ -117,7 +117,7 @@ def parse_package_string(data, *, filename=None):
     root = nodes[0]
 
     # format attribute
-    value = _get_node_attr(root, 'format', default=1)
+    value = _get_node_attr(root, 'format', default=2)
     pkg.package_format = int(value)
     assert pkg.package_format > 1, \
         "Unable to handle '%s' format version '%d', please update the " \
@@ -262,6 +262,7 @@ def parse_package_string(data, *, filename=None):
         'conflict': depend_attributes,
         'replace': depend_attributes,
         'export': [],
+        'run_depend': depend_attributes,
     }
     nodes = [n for n in root.childNodes if n.nodeType == n.ELEMENT_NODE]
     unknown_tags = set([n.tagName for n in nodes
