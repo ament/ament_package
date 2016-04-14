@@ -101,8 +101,9 @@ class Package(object):
         # only allow lower case alphanummeric characters and underscores
         # must start with an alphabetic character
         if not re.match('^[a-z][a-z0-9_]*$', self.name):
-            errors.append("Package name '%s' does not follow naming "
-                          "conventions" % self.name)
+            #errors.append("Package name '%s' does not follow naming "
+            #              "conventions" % self.name)
+            pass
 
         if not self.version:
             errors.append('Package version must not be empty')
