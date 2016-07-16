@@ -119,11 +119,11 @@ def parse_package_string(data, *, filename=None):
     # format attribute
     value = _get_node_attr(root, 'format', default=1)
     pkg.package_format = int(value)
-    assert pkg.package_format > 1, \
-        "Unable to handle '%s' format version '%d', please update the " \
-        "manifest file to at least format version 2" % \
-        (filename, pkg.package_format)
-    assert pkg.package_format in [2], \
+    #assert pkg.package_format > 1, \
+    #    "Unable to handle '%s' format version '%d', please update the " \
+    #    "manifest file to at least format version 2" % \
+    #    (filename, pkg.package_format)
+    assert pkg.package_format <= 2, \
         "Unable to handle '%s' format version '%d', please update " \
         "'ament_package' (e.g. on Ubuntu/Debian use: sudo apt-get update && " \
         "sudo apt-get install --only-upgrade python-ament-package)" % \
@@ -263,6 +263,9 @@ def parse_package_string(data, *, filename=None):
         'replace': depend_attributes,
         'export': [],
     }
+    if pkg.package_format == 1:
+        known['run_depend'] = depend_attributes
+
     nodes = [n for n in root.childNodes if n.nodeType == n.ELEMENT_NODE]
     unknown_tags = set([n.tagName for n in nodes
                         if n.tagName not in known.keys()])
