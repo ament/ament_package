@@ -57,6 +57,10 @@ goto:eof
       set "reverse_ppp="
       for /f "tokens=1 delims=" %%p in (%~2\share\ament_index\resource_index\parent_prefix_path\%%~a) do (
         if "!reverse_ppp!" NEQ "" set "reverse_ppp=;!reverse_ppp!"
+        :: replace placeholder of current prefix
+        if "%%~p" EQU "{prefix}" (
+          set "p=%~2"
+        )
         set "reverse_ppp=%%~p!reverse_ppp!"
       )
 
