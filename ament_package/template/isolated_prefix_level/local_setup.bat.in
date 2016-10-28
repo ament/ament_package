@@ -24,14 +24,23 @@ goto:eof
   setlocal enabledelayedexpansion
 
   :: use the Python executable known at configure time
-  set "ament_python_executable=@PYTHON_EXECUTABLE@"
+  set "_ament_python_executable=@PYTHON_EXECUTABLE@"
   :: allow overriding it with a custom location
   if "%AMENT_PYTHON_EXECUTABLE%" NEQ "" (
-    set "ament_python_executable=%AMENT_PYTHON_EXECUTABLE%"
+    set "_ament_python_executable=%AMENT_PYTHON_EXECUTABLE%"
+  )
+  if NOT exist %_ament_python_executable% (
+    for %%I in (python.exe) do (
+      if "%%~$PATH:I" NEQ "" set "_ament_python_executable=%%~$PATH:I"
+    )
+  )
+  if NOT exist %_ament_python_executable% (
+    echo Could not find Python executable: either add the folder of the Python executable (e.g. installed with Chocolatey) to the PATH variable or explicitly set the environment variable AMENT_PYTHON_EXECUTABLE to the full path of the Python executable
+    goto:eof
   )
 
   set "ordered_packages="
-  for /f %%p in ('""%ament_python_executable%" "%~dp0_order_isolated_packages.py" "%~2\""') do (
+  for /f %%p in ('""%_ament_python_executable%" "%~dp0_order_isolated_packages.py" "%~2\""') do (
     if "!ordered_packages!" NEQ "" set "ordered_packages=!ordered_packages!;"
     set "ordered_packages=!ordered_packages!%%p"
   )
