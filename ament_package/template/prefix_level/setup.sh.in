@@ -81,7 +81,7 @@ for _resource in $_RESOURCES; do
   fi
   for _path in $_PARENT_PREFIX_PATH; do
     # replace placeholder of current prefix
-    if [ "$_path" = "{prefix}"]; then
+    if [ "$_path" = "{prefix}" ]; then
       _path="$AMENT_CURRENT_PREFIX"
     fi
     # avoid leading separator
