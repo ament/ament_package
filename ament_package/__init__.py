@@ -84,6 +84,9 @@ def parse_package_string(data, *, filename=None):
     """
     Parse package.xml string contents.
 
+    Any warnings are stored in the ``parsing_warnings`` member of the
+    returned package obj.
+
     :param data: package.xml contents, ``str``
     :param filename: full file path for debugging, ``str``
     :returns: return parsed :class:`Package`
@@ -291,7 +294,7 @@ def parse_package_string(data, *, filename=None):
             'Error(s) in %s:%s' %
             (filename, ''.join(['\n- %s' % e for e in errors])))
 
-    pkg.validate()
+    pkg.parsing_warnings = pkg.validate(package_name_warning_not_error=True)
 
     return pkg
 

@@ -41,7 +41,8 @@ class Package(object):
         'conflicts',
         'replaces',
         'exports',
-        'filename'
+        'filename',
+        'parsing_warnings'
     ]
 
     def __init__(self, *, filename=None, **kwargs):
@@ -90,6 +91,7 @@ class Package(object):
 
         :raises InvalidPackage: in case validation fails
         """
+        warnings = []
         errors = []
         if self.package_format:
             if not re.match('^[1-9][0-9]*$', str(self.package_format)):
@@ -152,3 +154,5 @@ class Package(object):
 
         if errors:
             raise InvalidPackage('\n'.join(errors))
+
+        return warnings
