@@ -85,10 +85,13 @@ class Package(object):
             data[attr] = getattr(self, attr)
         return str(data)
 
-    def validate(self):
+    def validate(self, package_name_warning_not_error=False):
         """
         Ensure that all standards for packages are met.
 
+        :param package_name_warning_not_error: if True, some package name
+            violations are treated as warnings not errors
+        :returns: list of warnings as strings or an empty list if none
         :raises InvalidPackage: in case validation fails
         """
         warnings = []
@@ -103,8 +106,14 @@ class Package(object):
         # only allow lower case alphanummeric characters and underscores
         # must start with an alphabetic character
         if not re.match('^[a-z][a-z0-9_]*$', self.name):
-            errors.append("Package name '%s' does not follow naming "
-                          "conventions" % self.name)
+            msg = (
+                "Package name '%s' does not follow naming conventions"
+                % self.name
+            )
+            if package_name_warning_not_error:
+                warnings.append(msg)
+            else:
+                errors.append(msg)
 
         if not self.version:
             errors.append('Package version must not be empty')

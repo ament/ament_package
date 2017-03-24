@@ -29,9 +29,11 @@ except ImportError:
 PACKAGE_MANIFEST_FILENAME = 'package.xml'
 
 
-def parse_package(path):
+def parse_package(path, **kwargs):
     """
     Parse package manifest.
+
+    Any keyword arguments are passed along to parse_package_string().
 
     :param path: The path of the package.xml file, it may or may not
     include the filename
@@ -57,7 +59,7 @@ def parse_package(path):
 
     with open(filename, 'r', encoding='utf-8') as f:
         try:
-            return parse_package_string(f.read(), filename=filename)
+            return parse_package_string(f.read(), filename=filename, **kwargs)
         except InvalidPackage as e:
             e.args = [
                 "Invalid package manifest '%s': %s" %
@@ -80,7 +82,12 @@ def package_exists_at(path):
         os.path.join(path, PACKAGE_MANIFEST_FILENAME))
 
 
-def parse_package_string(data, *, filename=None):
+def parse_package_string(
+    data,
+    *,
+    filename=None,
+    package_name_warning_not_error=False
+):
     """
     Parse package.xml string contents.
 
@@ -89,6 +96,8 @@ def parse_package_string(data, *, filename=None):
 
     :param data: package.xml contents, ``str``
     :param filename: full file path for debugging, ``str``
+    :param package_name_warning_not_error: if True, some package name
+        violations are treated as warnings not errors, ``bool``
     :returns: return parsed :class:`Package`
     :raises: :exc:`InvalidPackage`
     """
