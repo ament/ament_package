@@ -112,12 +112,12 @@ class Package(object):
 
         if not self.name:
             errors.append('Package name must not be empty')
-        valid_package_name_regexp = '^[a-z][a-z0-9_]*$'
         # must start with an alphabetic character only allow lower case
         # alphanummeric characters and underscores in catkin or ament packages.
-        # Dashes are allowed for other build_types.
+        valid_package_name_regexp = '^[a-z][a-z0-9_]*$'
         build_type = self.get_build_type()
         if build_type != 'catkin' and not build_type.startswith('ament'):
+            # Dashes are allowed for other build_types.
             valid_package_name_regexp = '^[a-z][a-z0-9_-]*$'
         if not re.match(valid_package_name_regexp, self.name):
             errors.append("Package name '%s' does not follow naming "
