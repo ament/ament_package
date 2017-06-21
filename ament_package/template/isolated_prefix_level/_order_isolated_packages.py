@@ -20,9 +20,7 @@ import sys
 
 
 def main(argv=sys.argv[1:]):
-    """
-    Get the package names in an isolated install space in topological order.
-    """
+    """Get the package names in an isolated install space in topolog. order."""
     parser = argparse.ArgumentParser(
         description='Find all package names in an isolated install space and '
                     'order them topologically based on the run dependencies',
