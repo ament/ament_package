@@ -13,8 +13,9 @@
 # limitations under the License.
 
 import os
-import pkg_resources
 import re
+
+import pkg_resources
 
 IS_WINDOWS = os.name == 'nt'
 
@@ -74,12 +75,13 @@ def get_isolated_prefix_level_template_names(*, all_platforms=False):
 
 
 def get_isolated_prefix_level_template_path(name):
-    return pkg_resources.resource_filename('ament_package', 'template/isolated_prefix_level/' + name)
+    return pkg_resources.resource_filename(
+        'ament_package', 'template/isolated_prefix_level/' + name)
 
 
 def configure_file(template_file, environment):
-    '''
-    Evaluate a .in template file used in CMake with configure_file().
+    """
+    Evaluate a .in template file used in CMake with configure_file.
 
     :param template_file: path to the template, ``str``
     :param environment: dictionary of placeholders to substitute,
@@ -87,14 +89,14 @@ def configure_file(template_file, environment):
     :returns: string with evaluates template
     :raises: KeyError for placeholders in the template which are not
       in the environment
-    '''
+    """
     with open(template_file, 'r') as f:
         template = f.read()
         return configure_string(template, environment)
 
 
 def configure_string(template, environment):
-    '''
+    """
     Substitute variables enclosed by @ characters.
 
     :param template: the template, ``str``
@@ -103,7 +105,7 @@ def configure_string(template, environment):
     :returns: string with evaluates template
     :raises: KeyError for placeholders in the template which are not
       in the environment
-    '''
+    """
     def substitute(match):
         var = match.group(0)[1:-1]
         if var in environment:

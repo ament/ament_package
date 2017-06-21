@@ -19,7 +19,6 @@ from .exceptions import InvalidPackage
 
 
 class Package(object):
-
     """Object representation of a package manifest file."""
 
     __slots__ = [

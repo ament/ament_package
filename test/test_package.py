@@ -12,18 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import unittest
-
-# Redirect stderr to stdout to suppress output in tests
 import sys
-sys.stderr = sys.stdout
+import unittest
 
 from ament_package.dependency import Dependency
 from ament_package.exceptions import InvalidPackage
 from ament_package.package import Package
 from ament_package.person import Person
-
 from mock import Mock
+
+# Redirect stderr to stdout to suppress output in tests
+sys.stderr = sys.stdout
 
 
 class PackageTest(unittest.TestCase):
