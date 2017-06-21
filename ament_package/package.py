@@ -84,6 +84,20 @@ class Package(object):
             data[attr] = getattr(self, attr)
         return str(data)
 
+    def get_build_type(self):
+        """
+        Return value of export/build_type element, or 'catkin' if unspecified.
+        :returns: package build type
+        :rtype: str
+        :raises: :exc:`InvalidPackage`
+        """
+        build_type_exports = [ex.contents for ex in self.exports if ex.tagname == 'build_type']
+        if not build_type_exports:
+            return 'catkin'
+        if len(build_type_exports) == 1:
+            return build_type_exports[0]
+        raise InvalidPackage('Only one <build_type> element is permitted.')
+
     def validate(self):
         """
         Ensure that all standards for packages are met.
