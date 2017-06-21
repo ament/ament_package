@@ -138,10 +138,24 @@ class PackageTest(unittest.TestCase):
         self.assertRaises(InvalidPackage, Package.validate, pack)
         pack.name = 'bar bza'
         self.assertRaises(InvalidPackage, Package.validate, pack)
-        pack.name = 'bar-bza'
-        self.assertRaises(InvalidPackage, Package.validate, pack)
         pack.name = 'BAR'
         self.assertRaises(InvalidPackage, Package.validate, pack)
+        # dashes should be acceptable in packages other than catkin or
+        # ament_*.
+        # no build_type, so catkin is assumed per REP-140.
+        pack.name = 'bar-bza'
+        self.assertRaises(InvalidPackage, Package.validate, pack)
+        # check explicit catkin and ament_* build_types
+        build_type = Mock(tagname='build_type', attributes={}, contents='catkin')
+        pack.exports = [build_type]
+        self.assertRaises(InvalidPackage, Package.validate, pack)
+        build_type.contents = 'ament_cmake'
+        self.assertRaises(InvalidPackage, Package.validate, pack)
+        build_type.contents = 'ament_python'
+        self.assertRaises(InvalidPackage, Package.validate, pack)
+        # check non ament/catkin build type is valid
+        build_type.contents = 'cmake'
+        pack.validate()
         # check authors emails
         pack.name = 'bar'
         auth1 = Mock()
