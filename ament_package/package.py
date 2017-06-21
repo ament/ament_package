@@ -112,8 +112,9 @@ class Package(object):
 
         if not self.name:
             errors.append('Package name must not be empty')
-        # must start with an alphabetic character only allow lower case
-        # alphanummeric characters and underscores in catkin or ament packages.
+        # Must start with a lower case alphabetic character.
+        # Allow lower case alphanummeric characters and underscores in
+        # catkin or ament packages.
         valid_package_name_regexp = '^[a-z][a-z0-9_]*$'
         build_type = self.get_build_type()
         if build_type != 'catkin' and not build_type.startswith('ament'):
