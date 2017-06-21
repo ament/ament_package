@@ -112,19 +112,11 @@ class Package(object):
 
         if not self.name:
             errors.append('Package name must not be empty')
-        # assume packages are catkin unless a build_type is exported.
-        build_type = 'catkin'
-        build_types = [ex.contents for ex in self.exports if ex.tagname == 'build_type']
-        if len(build_types) > 1:
-            # this is bad, but first I must ask if we should make this an error.
-            pass
-        elif len(build_types) == 1:
-            build_type = build_types[0]
         valid_package_name_regexp = '^[a-z][a-z0-9_]*$'
-        # must start with an alphabetic character
-        # only allow lower case alphanummeric characters, underscores in catkin or
-        # ament packages. Dashes are allowed for other build_types.
-        if not re.match('^(ament[a-z0-9_]*|catkin)$', build_type):
+        # must start with an alphabetic character only allow lower case
+        # alphanummeric characters and underscores in catkin or ament packages.
+        # Dashes are allowed for other build_types.
+        if not re.match('^(ament[a-z0-9_]*|catkin)$', self.get_build_type()):
             valid_package_name_regexp = '^[a-z][a-z0-9_-]*$'
         if not re.match(valid_package_name_regexp, self.name):
             errors.append("Package name '%s' does not follow naming "
