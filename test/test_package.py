@@ -141,7 +141,7 @@ class PackageTest(unittest.TestCase):
         pack.name = 'BAR'
         self.assertRaises(InvalidPackage, Package.validate, pack)
         # dashes should be acceptable in packages other than catkin or
-        # ament_*.
+        # ament*.
         # no build_type, so catkin is assumed per REP-140.
         pack.name = 'bar-bza'
         self.assertRaises(InvalidPackage, Package.validate, pack)
