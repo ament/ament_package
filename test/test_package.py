@@ -146,15 +146,15 @@ class PackageTest(unittest.TestCase):
         pack.name = 'bar-bza'
         self.assertRaises(InvalidPackage, Package.validate, pack)
         # check explicit catkin and ament_* build_types
-        build_type = Mock(tagname='build_type', attributes={}, contents='catkin')
+        build_type = Mock(tagname='build_type', attributes={}, content='catkin')
         pack.exports = [build_type]
         self.assertRaises(InvalidPackage, Package.validate, pack)
-        build_type.contents = 'ament_cmake'
+        build_type.content = 'ament_cmake'
         self.assertRaises(InvalidPackage, Package.validate, pack)
-        build_type.contents = 'ament_python'
+        build_type.content = 'ament_python'
         self.assertRaises(InvalidPackage, Package.validate, pack)
         # check non ament/catkin build type is valid
-        build_type.contents = 'cmake'
+        build_type.content = 'cmake'
         pack.validate()
         # check authors emails
         pack.name = 'bar'
