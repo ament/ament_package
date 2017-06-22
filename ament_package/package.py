@@ -91,7 +91,7 @@ class Package(object):
         :rtype: str
         :raises: :exc:`InvalidPackage`
         """
-        build_type_exports = [ex.contents for ex in self.exports if ex.tagname == 'build_type']
+        build_type_exports = [ex.content for ex in self.exports if ex.tagname == 'build_type']
         if not build_type_exports:
             return 'catkin'
         if len(build_type_exports) == 1:
