@@ -83,6 +83,20 @@ class Package(object):
             data[attr] = getattr(self, attr)
         return str(data)
 
+    def get_build_type(self):
+        """
+        Return value of export/build_type element, or 'catkin' if unspecified.
+        :returns: package build type
+        :rtype: str
+        :raises: :exc:`InvalidPackage`
+        """
+        build_type_exports = [ex.content for ex in self.exports if ex.tagname == 'build_type']
+        if not build_type_exports:
+            return 'catkin'
+        if len(build_type_exports) == 1:
+            return build_type_exports[0]
+        raise InvalidPackage('Only one <build_type> element is permitted.')
+
     def validate(self):
         """
         Ensure that all standards for packages are met.
@@ -97,9 +111,15 @@ class Package(object):
 
         if not self.name:
             errors.append('Package name must not be empty')
-        # only allow lower case alphanummeric characters and underscores
-        # must start with an alphabetic character
-        if not re.match('^[a-z][a-z0-9_]*$', self.name):
+        # Must start with a lower case alphabetic character.
+        # Allow lower case alphanummeric characters and underscores in
+        # catkin or ament packages.
+        valid_package_name_regexp = '^[a-z][a-z0-9_]*$'
+        build_type = self.get_build_type()
+        if build_type != 'catkin' and not build_type.startswith('ament'):
+            # Dashes are allowed for other build_types.
+            valid_package_name_regexp = '^[a-z][a-z0-9_-]*$'
+        if not re.match(valid_package_name_regexp, self.name):
             errors.append("Package name '%s' does not follow naming "
                           "conventions" % self.name)
 
