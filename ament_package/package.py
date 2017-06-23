@@ -86,6 +86,7 @@ class Package(object):
     def get_build_type(self):
         """
         Return value of export/build_type element, or 'catkin' if unspecified.
+
         :returns: package build type
         :rtype: str
         :raises: :exc:`InvalidPackage`
