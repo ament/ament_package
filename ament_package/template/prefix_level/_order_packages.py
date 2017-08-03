@@ -32,7 +32,7 @@ def main(argv=sys.argv[1:]):
     args = parser.parse_args(argv)
 
     path = os.path.join(args.root, 'share', 'ament_index', 'resource_index', 'packages')
-    package_names = [d for d in os.listdir(path)]
+    package_names = os.listdir(path) if os.path.exists(path) else []
     run_dependencies = {}
     for pkg_name in package_names:
         run_dependencies[pkg_name] = []
