@@ -2,6 +2,7 @@
 @echo off
 
 call:ament_prepend_unique_value PATH "%AMENT_CURRENT_PREFIX%\bin"
+call:ament_prepend_unique_value PATH "%AMENT_CURRENT_PREFIX%\Scripts"
 
 goto:eof
 
