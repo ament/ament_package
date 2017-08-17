@@ -15,6 +15,10 @@ goto:eof
   :: arguments
   set "listname=%~1"
   set "value=%~2"
+  :: skip if path doesn't exist
+  if NOT EXIST "%value%" (
+    goto:eof
+  )
   :: expand the list variable
   set "list=!%listname%!"
   :: check if the list contains the value
