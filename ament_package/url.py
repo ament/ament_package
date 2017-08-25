@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-class Url(object):
+class Url:
     __slots__ = ['url', 'type']
 
     def __init__(self, url, *, url_type=None):
