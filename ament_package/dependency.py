@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-class Dependency(object):
+class Dependency:
     __slots__ = [
         'name',
         'version_lt',

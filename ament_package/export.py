@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-class Export(object):
+class Export:
     __slots__ = ['tagname', 'attributes', 'content']
 
     def __init__(self, tagname, *, attributes=None, content=None):

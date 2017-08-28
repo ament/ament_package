@@ -17,7 +17,7 @@ import re
 from .exceptions import InvalidPackage
 
 
-class Person(object):
+class Person:
     __slots__ = ['name', 'email']
 
     def __init__(self, name, *, email=None):

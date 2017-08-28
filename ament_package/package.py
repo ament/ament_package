@@ -18,7 +18,7 @@ import re
 from .exceptions import InvalidPackage
 
 
-class Package(object):
+class Package:
     """Object representation of a package manifest file."""
 
     __slots__ = [
