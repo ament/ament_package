@@ -40,7 +40,7 @@ class Package:
         'conflicts',
         'replaces',
         'exports',
-        'filename'
+        'filename',
     ]
 
     def __init__(self, *, filename=None, **kwargs):
@@ -108,7 +108,7 @@ class Package:
         if self.package_format:
             if not re.match('^[1-9][0-9]*$', str(self.package_format)):
                 errors.append("The 'format' attribute of the package must "
-                              "contain a positive integer if present")
+                              'contain a positive integer if present')
 
         if not self.name:
             errors.append('Package name must not be empty')
@@ -122,13 +122,13 @@ class Package:
             valid_package_name_regexp = '^[a-z][a-z0-9_-]*$'
         if not re.match(valid_package_name_regexp, self.name):
             errors.append("Package name '%s' does not follow naming "
-                          "conventions" % self.name)
+                          'conventions' % self.name)
 
         if not self.version:
             errors.append('Package version must not be empty')
         elif not re.match('^[0-9]+\.[0-9_]+\.[0-9_]+$', self.version):
             errors.append("Package version '%s' does not follow version "
-                          "conventions" % self.version)
+                          'conventions' % self.version)
 
         if not self.description:
             errors.append('Package description must not be empty')
@@ -144,7 +144,7 @@ class Package:
                 errors.append('Maintainers must have an email address')
 
         if not self.licenses:
-            errors.append("The package node must contain at least one "
+            errors.append('The package node must contain at least one '
                           "'license' tag")
 
         if self.authors is not None:
@@ -161,14 +161,14 @@ class Package:
             'buildtool_export': self.buildtool_export_depends,
             'exec': self.exec_depends,
             'test': self.test_depends,
-            'doc': self.doc_depends
+            'doc': self.doc_depends,
         }
         for dep_type, depends in dep_types.items():
             for depend in depends:
                 if depend.name == self.name:
                     errors.append(
                         "The package must not '%s_depend' on a package with "
-                        "the same name as this package" % dep_type)
+                        'the same name as this package' % dep_type)
 
         if errors:
             raise InvalidPackage('\n'.join(errors))

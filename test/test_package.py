@@ -66,12 +66,12 @@ class PackageTest(unittest.TestCase):
                          version_eq=3,
                          version_gte=4,
                          version_gt=5)
-        self.assertEquals('foo', dep.name)
-        self.assertEquals(1, dep.version_lt)
-        self.assertEquals(2, dep.version_lte)
-        self.assertEquals(3, dep.version_eq)
-        self.assertEquals(4, dep.version_gte)
-        self.assertEquals(5, dep.version_gt)
+        self.assertEqual('foo', dep.name)
+        self.assertEqual(1, dep.version_lt)
+        self.assertEqual(2, dep.version_lte)
+        self.assertEqual(3, dep.version_eq)
+        self.assertEqual(4, dep.version_gte)
+        self.assertEqual(5, dep.version_gt)
         self.assertRaises(TypeError, Dependency, 'foo', unknownattribute=42)
 
     def test_init_kwargs_string(self):
