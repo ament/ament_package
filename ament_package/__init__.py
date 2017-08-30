@@ -53,7 +53,7 @@ def parse_package(path):
                           (path, PACKAGE_MANIFEST_FILENAME))
     else:
         raise IOError("Path '%s' is neither a directory containing a '%s' "
-                      "file nor a file" % (path, PACKAGE_MANIFEST_FILENAME))
+                      'file nor a file' % (path, PACKAGE_MANIFEST_FILENAME))
 
     with open(filename, 'r', encoding='utf-8') as f:
         try:
@@ -112,8 +112,8 @@ def parse_package_string(data, *, filename=None):
     # verify unique root node
     nodes = _get_nodes(root, 'package')
     if len(nodes) != 1:
-        raise InvalidPackage("The manifest must contain a single 'package' "
-                             "root tag")
+        raise InvalidPackage(
+            "The manifest must contain a single 'package' root tag")
     root = nodes[0]
 
     # format attribute
@@ -121,12 +121,12 @@ def parse_package_string(data, *, filename=None):
     pkg.package_format = int(value)
     assert pkg.package_format > 1, \
         "Unable to handle '%s' format version '%d', please update the " \
-        "manifest file to at least format version 2" % \
+        'manifest file to at least format version 2' % \
         (filename, pkg.package_format)
     assert pkg.package_format in [2], \
         "Unable to handle '%s' format version '%d', please update " \
         "'ament_package' (e.g. on Ubuntu/Debian use: sudo apt-get update && " \
-        "sudo apt-get install --only-upgrade python-ament-package)" % \
+        'sudo apt-get install --only-upgrade python-ament-package)' % \
         (filename, pkg.package_format)
 
     # name
@@ -145,24 +145,21 @@ def parse_package_string(data, *, filename=None):
     for node in maintainers:
         pkg.maintainers.append(Person(
             _get_node_value(node, apply_str=False),
-            email=_get_node_attr(node, 'email')
-        ))
+            email=_get_node_attr(node, 'email')))
 
     # urls with optional type
     urls = _get_nodes(root, 'url')
     for node in urls:
         pkg.urls.append(Url(
             _get_node_value(node),
-            url_type=_get_node_attr(node, 'type', default='website')
-        ))
+            url_type=_get_node_attr(node, 'type', default='website')))
 
     # authors with optional email
     authors = _get_nodes(root, 'author')
     for node in authors:
         pkg.authors.append(Person(
             _get_node_value(node, apply_str=False),
-            email=_get_node_attr(node, 'email', default=None)
-        ))
+            email=_get_node_attr(node, 'email', default=None)))
 
     # at least one license
     licenses = _get_nodes(root, 'license')
@@ -190,7 +187,7 @@ def parse_package_string(data, *, filename=None):
         if same_build_depends or same_build_export_depends or \
                 same_exec_depends:
             errors.append("The generic dependency on '%s' is redundant with: "
-                          "%s" % (dep.name,
+                          '%s' % (dep.name,
                                   ', '.join(same_build_depends +
                                             same_build_export_depends +
                                             same_exec_depends)))
@@ -229,19 +226,19 @@ def parse_package_string(data, *, filename=None):
     valid_root_attributes = [
         'format',
         'xmlns:xsi',
-        'xsi:noNamespaceSchemaLocation'
+        'xsi:noNamespaceSchemaLocation',
     ]
     unknown_root_attributes = [attr for attr in root.attributes.keys()
                                if str(attr) not in valid_root_attributes]
     if unknown_root_attributes:
         errors.append("The 'package' tag must not have the following "
-                      "attributes: %s" % ', '.join(unknown_root_attributes))
+                      'attributes: %s' % ', '.join(unknown_root_attributes))
     depend_attributes = [
         'version_lt',
         'version_lte',
         'version_eq',
         'version_gte',
-        'version_gt'
+        'version_gt',
     ]
     known = {
         'name': [],
@@ -264,8 +261,7 @@ def parse_package_string(data, *, filename=None):
         'export': [],
     }
     nodes = [n for n in root.childNodes if n.nodeType == n.ELEMENT_NODE]
-    unknown_tags = set([n.tagName for n in nodes
-                        if n.tagName not in known.keys()])
+    unknown_tags = {n.tagName for n in nodes if n.tagName not in known.keys()}
     if unknown_tags:
         errors.append('The manifest (with format version %d) must not contain '
                       'the following tags: %s' %
@@ -282,7 +278,7 @@ def parse_package_string(data, *, filename=None):
                         if n.nodeType == n.ELEMENT_NODE]
             if subnodes:
                 errors.append("The '%s' tag must not contain the following "
-                              "children: %s" %
+                              'children: %s' %
                               (node.tagName,
                                ', '.join([n.tagName for n in subnodes])))
 

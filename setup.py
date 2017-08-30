@@ -19,9 +19,9 @@ setup(
         'Topic :: Software Development',
     ],
     description='Ament is a build system for federated packages.',
-    long_description='''\
+    long_description="""\
 Ament defines metainformation for packages, their dependencies,
-and provides tooling to build these federated packages together.''',
+and provides tooling to build these federated packages together.""",
     license='Apache License, Version 2.0',
     test_suite='test',
     package_data={
