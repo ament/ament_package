@@ -94,6 +94,7 @@ def parse_package_string(data, *, filename=None):
 
     from .exceptions import InvalidPackage
     from .export import Export
+    from .group_dependency import GroupDependency
     from .package import Package
     from .person import Person
     from .url import Url
@@ -123,7 +124,7 @@ def parse_package_string(data, *, filename=None):
         "Unable to handle '%s' format version '%d', please update the " \
         'manifest file to at least format version 2' % \
         (filename, pkg.package_format)
-    assert pkg.package_format in [2], \
+    assert pkg.package_format in [2, 3], \
         "Unable to handle '%s' format version '%d', please update " \
         "'ament_package' (e.g. on Ubuntu/Debian use: sudo apt-get update && " \
         'sudo apt-get install --only-upgrade python-ament-package)' % \
@@ -135,6 +136,8 @@ def parse_package_string(data, *, filename=None):
     # version
     version_node = _get_node(root, 'version')
     pkg.version = _get_node_value(version_node)
+    pkg.version_compatibility = _get_node_attr(
+        version_node, 'compatibility', default=None)
 
     # description
     pkg.description = _get_node_value(
@@ -209,6 +212,11 @@ def parse_package_string(data, *, filename=None):
     pkg.conflicts = _get_dependencies(root, 'conflict')
     pkg.replaces = _get_dependencies(root, 'replace')
 
+    # group dependencies and membership
+    pkg.group_depends = [
+        GroupDependency(g) for g in _get_groups(root, 'group_depend')]
+    pkg.member_of_groups = _get_groups(root, 'member_of_group')
+
     # exports
     export_node = _get_optional_node(root, 'export')
     if export_node is not None:
@@ -242,7 +250,7 @@ def parse_package_string(data, *, filename=None):
     ]
     known = {
         'name': [],
-        'version': [],
+        'version': ['compatibility'],
         'description': [],
         'maintainer': ['email'],
         'license': [],
@@ -260,6 +268,11 @@ def parse_package_string(data, *, filename=None):
         'replace': depend_attributes,
         'export': [],
     }
+    if pkg.package_format > 2:
+        known.update({
+            'group_depend': [],
+            'member_of_group': [],
+        })
     nodes = [n for n in root.childNodes if n.nodeType == n.ELEMENT_NODE]
     unknown_tags = {n.tagName for n in nodes if n.tagName not in known.keys()}
     if unknown_tags:
@@ -359,3 +372,10 @@ def _get_dependencies(parent, tagname):
             setattr(depend, attr, _get_node_attr(node, attr, default=None))
         depends.append(depend)
     return depends
+
+
+def _get_groups(parent, tagname):
+    groups = []
+    for node in _get_nodes(parent, tagname):
+        groups.append(_get_node_value(node))
+    return groups
