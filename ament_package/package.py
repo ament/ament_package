@@ -101,6 +101,32 @@ class Package:
             return build_type_exports[0]
         raise InvalidPackage('Only one <build_type> element is permitted.')
 
+    def evaluate_conditions(self, context):
+        """
+        Evaluate the conditions of all dependencies and memberships.
+
+        :param context: A dictionary with key value pairs to replace variables
+          starting with $ in the condition.
+
+        :raises: :exc:`ValueError` if any condition fails to parse
+        """
+        for attr in (
+            'build_depends',
+            'buildtool_depends',
+            'build_export_depends',
+            'buildtool_export_depends',
+            'exec_depends',
+            'test_depends',
+            'doc_depends',
+            'conflicts',
+            'replaces',
+            'group_depends',
+            'member_of_groups',
+        ):
+            conditionals = getattr(self, attr)
+            for conditional in conditionals:
+                conditional.evaluate_condition(context)
+
     def validate(self):
         """
         Ensure that all standards for packages are met.
@@ -179,7 +205,10 @@ class Package:
                         "The package must not '%s_depend' on a package with "
                         'the same name as this package' % dep_type)
 
-        if {d.name for d in self.group_depends} & set(self.member_of_groups):
+        if (
+            {d.name for d in self.group_depends} &
+            {g.name for g in self.member_of_groups}
+        ):
             errors.append(
                 "The package must not 'group_depend' on a package which it "
                 'also declares to be a member of')

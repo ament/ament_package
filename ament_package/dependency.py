@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from ament_package.condition import evaluate_condition
+
 
 class Dependency:
     __slots__ = [
@@ -21,9 +23,12 @@ class Dependency:
         'version_eq',
         'version_gte',
         'version_gt',
+        'condition',
+        'evaluated_condition',
     ]
 
     def __init__(self, name, **kwargs):
+        self.evaluated_condition = None
         for attr in self.__slots__:
             value = kwargs[attr] if attr in kwargs else None
             setattr(self, attr, value)
@@ -41,3 +46,18 @@ class Dependency:
 
     def __str__(self):
         return self.name
+
+    def evaluate_condition(self, context):
+        """
+        Evaluate the condition.
+
+        The result is also stored in the member variable `evaluated_condition`.
+
+        :param context: A dictionary with key value pairs to replace variables
+          starting with $ in the condition.
+
+        :returns: True if the condition evaluates to True, else False
+        :raises: :exc:`ValueError` if the condition fails to parse
+        """
+        self.evaluated_condition = evaluate_condition(self.condition, context)
+        return self.evaluated_condition

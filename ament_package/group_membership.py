@@ -15,22 +15,20 @@
 from ament_package.condition import evaluate_condition
 
 
-class GroupDependency:
+class GroupMembership:
     __slots__ = [
         'name',
         'condition',
         'evaluated_condition',
-        'members',
     ]
 
-    def __init__(self, name, condition=None, members=None):
+    def __init__(self, name, condition=None):
         self.name = name
         self.condition = condition
-        self.members = members
         self.evaluated_condition = None
 
     def __eq__(self, other):
-        if not isinstance(other, GroupDependency):
+        if not isinstance(other, GroupMembership):
             return False
         return all(getattr(self, attr) == getattr(other, attr)
                    for attr in self.__slots__)
@@ -52,9 +50,3 @@ class GroupDependency:
         """
         self.evaluated_condition = evaluate_condition(self.condition, context)
         return self.evaluated_condition
-
-    def extract_group_members(self, packages):
-        self.members = set()
-        for pkg in packages:
-            if self.name in [g.name for g in pkg.member_of_groups]:
-                self.members.add(pkg.name)

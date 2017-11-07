@@ -74,13 +74,18 @@ class PackageTest(unittest.TestCase):
                          version_lte=2,
                          version_eq=3,
                          version_gte=4,
-                         version_gt=5)
+                         version_gt=5,
+                         condition='$foo == 23 and $bar != 42')
         self.assertEqual('foo', dep.name)
         self.assertEqual(1, dep.version_lt)
         self.assertEqual(2, dep.version_lte)
         self.assertEqual(3, dep.version_eq)
         self.assertEqual(4, dep.version_gte)
         self.assertEqual(5, dep.version_gt)
+        self.assertFalse(dep.evaluate_condition({'foo': 23, 'bar': 42}))
+        self.assertFalse(dep.evaluated_condition)
+        self.assertTrue(dep.evaluate_condition({'foo': 23, 'bar': 43}))
+        self.assertTrue(dep.evaluated_condition)
         self.assertRaises(TypeError, Dependency, 'foo', unknownattribute=42)
 
     def test_init_kwargs_string(self):

@@ -94,7 +94,6 @@ def parse_package_string(data, *, filename=None):
 
     from .exceptions import InvalidPackage
     from .export import Export
-    from .group_dependency import GroupDependency
     from .package import Package
     from .person import Person
     from .url import Url
@@ -212,10 +211,9 @@ def parse_package_string(data, *, filename=None):
     pkg.conflicts = _get_dependencies(root, 'conflict')
     pkg.replaces = _get_dependencies(root, 'replace')
 
-    # group dependencies and membership
-    pkg.group_depends = [
-        GroupDependency(g) for g in _get_groups(root, 'group_depend')]
-    pkg.member_of_groups = _get_groups(root, 'member_of_group')
+    # group dependencies and memberships
+    pkg.group_depends = _get_group_dependencies(root, 'group_depend')
+    pkg.member_of_groups = _get_group_memberships(root, 'member_of_group')
 
     # exports
     export_node = _get_optional_node(root, 'export')
@@ -374,8 +372,23 @@ def _get_dependencies(parent, tagname):
     return depends
 
 
-def _get_groups(parent, tagname):
-    groups = []
+def _get_group_dependencies(parent, tagname):
+    from .group_dependency import GroupDependency
+    depends = []
     for node in _get_nodes(parent, tagname):
-        groups.append(_get_node_value(node))
-    return groups
+        depends.append(
+            GroupDependency(
+                _get_node_value(node),
+                condition=_get_node_attr(node, 'condition', default=None)))
+    return depends
+
+
+def _get_group_memberships(parent, tagname):
+    from .group_membership import GroupMembership
+    memberships = []
+    for node in _get_nodes(parent, tagname):
+        memberships.append(
+            GroupMembership(
+                _get_node_value(node),
+                condition=_get_node_attr(node, 'condition', default=None)))
+    return memberships
