@@ -126,7 +126,7 @@ def parse_package_string(data, *, filename=None):
     assert pkg.package_format in [2], \
         "Unable to handle '%s' format version '%d', please update " \
         "'ament_package' (e.g. on Ubuntu/Debian use: sudo apt-get update && " \
-        'sudo apt-get install --only-upgrade python-ament-package)' % \
+        'sudo apt-get install --only-upgrade python3-ament-package)' % \
         (filename, pkg.package_format)
 
     # name
