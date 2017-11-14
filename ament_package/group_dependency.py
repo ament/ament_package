@@ -1,4 +1,4 @@
-# Copyright 2014 Open Source Robotics Foundation, Inc.
+# Copyright 2017 Open Source Robotics Foundation, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,31 +15,22 @@
 from ament_package.condition import evaluate_condition
 
 
-class Dependency:
+class GroupDependency:
     __slots__ = [
         'name',
-        'version_lt',
-        'version_lte',
-        'version_eq',
-        'version_gte',
-        'version_gt',
         'condition',
         'evaluated_condition',
+        'members',
     ]
 
-    def __init__(self, name, **kwargs):
-        self.evaluated_condition = None
-        for attr in self.__slots__:
-            value = kwargs[attr] if attr in kwargs else None
-            setattr(self, attr, value)
+    def __init__(self, name, condition=None, members=None):
         self.name = name
-        # verify that no unknown keywords are passed
-        unknown = set(kwargs.keys()).difference(self.__slots__)
-        if unknown:
-            raise TypeError('Unknown properties: %s' % ', '.join(unknown))
+        self.condition = condition
+        self.members = members
+        self.evaluated_condition = None
 
     def __eq__(self, other):
-        if not isinstance(other, Dependency):
+        if not isinstance(other, GroupDependency):
             return False
         return all(getattr(self, attr) == getattr(other, attr)
                    for attr in self.__slots__)
@@ -61,3 +52,9 @@ class Dependency:
         """
         self.evaluated_condition = evaluate_condition(self.condition, context)
         return self.evaluated_condition
+
+    def extract_group_members(self, packages):
+        self.members = set()
+        for pkg in packages:
+            if self.name in [g.name for g in pkg.member_of_groups]:
+                self.members.add(pkg.name)
