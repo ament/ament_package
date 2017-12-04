@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import operator
 import pyparsing
 
 
@@ -34,7 +35,7 @@ def _get_condition_expression():
     global _condition_expression
     if not _condition_expression:
         pp = pyparsing
-        operator = pp.Regex('==|!=').setName('operator')
+        operator = pp.Regex('==|!=|>=|>|<=|<').setName('operator')
         identifier = pp.Word('$', pp.alphanums + '_', min=2)
         value = pp.Word(pp.alphanums + '_-')
         comparison_term = identifier | value
@@ -67,10 +68,15 @@ def _evaluate(parse_results, context):
             _evaluate(parse_results[2], context)
 
     # handle comparison operators
-    assert parse_results[1] in ('==', '!=')
-    if parse_results[1] == '==':
-        return _evaluate(parse_results[0], context) == \
-            _evaluate(parse_results[2], context)
-    if parse_results[1] == '!=':
-        return _evaluate(parse_results[0], context) != \
-            _evaluate(parse_results[2], context)
+    operators = {
+        '==': operator.eq,
+        '!=': operator.ne,
+        '<=': operator.le,
+        '<': operator.lt,
+        '>=': operator.ge,
+        '>': operator.gt,
+    }
+    assert parse_results[1] in operators.keys()
+    return operators[parse_results[1]](
+        _evaluate(parse_results[0], context),
+        _evaluate(parse_results[2], context))

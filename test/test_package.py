@@ -88,6 +88,12 @@ class PackageTest(unittest.TestCase):
         self.assertTrue(dep.evaluated_condition)
         self.assertRaises(TypeError, Dependency, 'foo', unknownattribute=42)
 
+        dep = Dependency('foo', condition='foo > bar and bar < baz')
+        self.assertTrue(dep.evaluate_condition({}))
+
+        dep = Dependency('foo', condition='foo <= bar or bar >= baz')
+        self.assertFalse(dep.evaluate_condition({}))
+
     def test_init_kwargs_string(self):
         pack = Package(filename='foo',
                        name='bar',
