@@ -94,6 +94,7 @@ def parse_package_string(data, *, filename=None):
 
     from .exceptions import InvalidPackage
     from .export import Export
+    from .license import License
     from .package import Package
     from .person import Person
     from .url import Url
@@ -166,7 +167,9 @@ def parse_package_string(data, *, filename=None):
     # at least one license
     licenses = _get_nodes(root, 'license')
     for node in licenses:
-        pkg.licenses.append(_get_node_value(node))
+        pkg.licenses.append(License(
+            _get_node_value(node),
+            file_=_get_node_attr(node, 'file', default=None)))
 
     errors = []
     # dependencies and relationships

@@ -17,6 +17,7 @@ import unittest
 
 from ament_package.dependency import Dependency
 from ament_package.exceptions import InvalidPackage
+from ament_package.license import License
 from ament_package.package import Package
 from ament_package.person import Person
 from mock import Mock
@@ -112,7 +113,7 @@ class PackageTest(unittest.TestCase):
 
     def test_init_kwargs_object(self):
         mmain = [self.get_maintainer(), self.get_maintainer()]
-        mlis = ['MIT', 'BSD']
+        mlis = [License('MIT'), License('BSD', file_='LICENSE')]
         mauth = [self.get_maintainer(), self.get_maintainer()]
         murl = [Mock(), Mock()]
         mbuilddep = [Mock(), Mock()]
