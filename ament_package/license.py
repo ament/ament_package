@@ -16,9 +16,9 @@
 class License:
     __slots__ = ['name', 'file']
 
-    def __init__(self, name, *, file=None):
+    def __init__(self, name, *, file_=None):
         self.name = name
-        self.file = file
+        self.file = file_
 
     def __str__(self):
         return self.name

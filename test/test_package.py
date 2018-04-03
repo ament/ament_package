@@ -113,7 +113,7 @@ class PackageTest(unittest.TestCase):
 
     def test_init_kwargs_object(self):
         mmain = [self.get_maintainer(), self.get_maintainer()]
-        mlis = [License('MIT'), License('BSD', file='LICENSE')]
+        mlis = [License('MIT'), License('BSD', file_='LICENSE')]
         mauth = [self.get_maintainer(), self.get_maintainer()]
         murl = [Mock(), Mock()]
         mbuilddep = [Mock(), Mock()]

@@ -169,7 +169,7 @@ def parse_package_string(data, *, filename=None):
     for node in licenses:
         pkg.licenses.append(License(
             _get_node_value(node),
-            file=_get_node_attr(node, 'file', default=None)))
+            file_=_get_node_attr(node, 'file', default=None)))
 
     errors = []
     # dependencies and relationships
