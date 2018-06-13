@@ -24,7 +24,7 @@ setup(
 Ament defines metainformation for packages, their dependencies,
 and provides tooling to build these federated packages together.""",
     license='Apache License, Version 2.0',
-    tests_require=['pytest', 'flake8'],
+    tests_require=['flake8', 'pytest'],
     package_data={
         'ament_package': [
             'template/environment_hook/*',
