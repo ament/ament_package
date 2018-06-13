@@ -7,7 +7,6 @@
   <maintainer email="dthomas@osrfoundation.org">Dirk Thomas</maintainer>
   <license>Apache License 2.0</license>
 
-  <depend>python3-pyparsing</depend>
   <depend>python3-setuptools</depend>
 
   <test_depend>ament_copyright</test_depend>
