@@ -19,13 +19,7 @@ import pytest
 @pytest.mark.flake8
 @pytest.mark.linter
 def test_flake8():
-    style = get_style_guide(
-        ignore='D100,D103,D104',
-        # flake8 doesn't appear to honor the import_order_style directive via this api.
-        # https://github.com/ros-infrastructure/catkin_pkg/pull/219#issuecomment-396092843
-        import_order_style='google',
-        max_line_length=99,
-        show_source=True,
-        statistics=True)
+    # Configure flake8 using the .flake8 file in the root of this repository.
+    style = get_style_guide()
     results = style.check_files()
     assert results.total_errors == 0, 'Found code style errors / warnings'
