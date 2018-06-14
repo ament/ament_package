@@ -21,6 +21,8 @@ import pytest
 def test_flake8():
     style = get_style_guide(
         ignore='D100,D103,D104',
+        # flake8 doesn't appear to honor the import_order_style directive via this api.
+        # https://github.com/ros-infrastructure/catkin_pkg/pull/219#issuecomment-396092843
         import_order_style='google',
         max_line_length=99,
         show_source=True,
