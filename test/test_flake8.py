@@ -19,10 +19,8 @@ import pytest
 @pytest.mark.flake8
 @pytest.mark.linter
 def test_flake8():
-    # Configuration options adapted from the ament_flake8
-    # https://github.com/ament/ament_lint/blob/master/ament_flake8/ament_flake8/configuration/ament_flake8.ini
     style = get_style_guide(
-        ignore='C816,D100,D101,D102,D103,D104,D105,D106,D107,D203,D212,D404,I202',
+        ignore='I202',
         import_order_style='google',
         max_line_length=99,
         show_source=True,
