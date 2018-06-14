@@ -26,4 +26,3 @@ def test_flake8():
         statistics=True)
     results = style.check_files()
     assert results.total_errors == 0, 'Found code style errors / warnings'
-    assert 1 == 0
