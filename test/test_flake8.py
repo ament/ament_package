@@ -12,12 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from ament_flake8.main import main
+from flake8.api.legacy import get_style_guide
 import pytest
 
 
 @pytest.mark.flake8
 @pytest.mark.linter
 def test_flake8():
-    rc = main(argv=[])
-    assert rc == 0, 'Found code style errors / warnings'
+    # Configure flake8 using the .flake8 file in the root of this repository.
+    style = get_style_guide()
+    results = style.check_files()
+    assert results.total_errors == 0, 'Found code style errors / warnings'
