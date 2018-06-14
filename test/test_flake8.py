@@ -20,6 +20,7 @@ import pytest
 @pytest.mark.linter
 def test_flake8():
     style = get_style_guide(
+        ignore='D100,D103,D104',
         import_order_style='google',
         max_line_length=99,
         show_source=True,
