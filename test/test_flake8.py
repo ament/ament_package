@@ -11,8 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from flake8.api.legacy import get_style_guide
 
+from flake8.api.legacy import get_style_guide
 import pytest
 
 
@@ -27,3 +27,4 @@ def test_flake8():
         statistics=True)
     results = style.check_files()
     assert results.total_errors == 0, 'Found code style errors / warnings'
+    assert 1 == 0
