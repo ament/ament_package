@@ -1,5 +1,7 @@
 # generated from ament_package/template/package_level/local_setup.zsh.in
 
+AMENT_SHELL=zsh
+
 # source local_setup.sh from same directory as this file
 _this_path=$(builtin cd -q "`dirname "${(%):-%N}"`" > /dev/null && pwd)
 # provide AMENT_CURRENT_PREFIX to shell script
