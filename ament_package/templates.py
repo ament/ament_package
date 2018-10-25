@@ -111,7 +111,7 @@ def configure_string(template, environment):
         if var in environment:
             return environment[var]
         return ''
-    return re.sub('\@[a-zA-Z0-9_]+\@', substitute, template)
+    return re.sub(r'\@[a-zA-Z0-9_]+\@', substitute, template)
 
 
 def _is_platform_specific_extension(filename):
