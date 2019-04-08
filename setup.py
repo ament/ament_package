@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='ament_package',
-    version='0.6.0',
+    version='0.7.0',
     packages=find_packages(exclude=['test']),
     zip_safe=True,
     author='Dirk Thomas',
