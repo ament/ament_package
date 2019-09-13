@@ -1,10 +1,15 @@
 from setuptools import find_packages
 from setuptools import setup
 
+package_name = 'ament_package'
+
 setup(
-    name='ament_package',
+    name=package_name,
     version='0.7.1',
     packages=find_packages(exclude=['test']),
+    data_files=[
+        ('share/' + package_name, ['package.xml']),
+    ],
     zip_safe=True,
     author='Dirk Thomas',
     author_email='dthomas@osrfoundation.org',
