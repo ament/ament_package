@@ -1,50 +1,59 @@
 :: generated from ament_package/template/prefix_level/local_setup.bat.in
 @echo off
 
-:: get all packages in topological order
-call:ament_get_ordered_packages _ordered_packages "%~dp0"
-
-:: source local_setup.bat file for each package
-if "%_ordered_packages%" NEQ "" (
-  for %%p in ("%_ordered_packages:;=";"%") do (
-    call:call_file "%~dp0share\%%~p\local_setup.bat"
-  )
-  set "_ordered_packages="
-)
+:: get and run all commands in topological order
+call:_ament_run_ordered_commands "%~dp0"
 
 goto:eof
 
 
-:: Get the package names in topological order
-:: using semicolons as separators and avoiding leading separators.
-:: first argument: the name of the result variable
-:: second argument: the base path to look for packages
-:ament_get_ordered_packages
-  setlocal enabledelayedexpansion
-
-  :: use the Python executable known at configure time
-  set "ament_python_executable=@PYTHON_EXECUTABLE@"
-  :: allow overriding it with a custom location
+:: Run the commands in topological order
+:: first argument: the base path to look for packages
+:_ament_run_ordered_commands
+  :: check environment variable for custom Python executable
   if "%AMENT_PYTHON_EXECUTABLE%" NEQ "" (
-    set "ament_python_executable=%AMENT_PYTHON_EXECUTABLE%"
+    if not exist "%AMENT_PYTHON_EXECUTABLE%" (
+      echo error: AMENT_PYTHON_EXECUTABLE '%AMENT_PYTHON_EXECUTABLE%' doesn't exist
+      exit /b 1
+    )
+    set "_ament_python_executable=%AMENT_PYTHON_EXECUTABLE%"
+  ) else (
+    :: use the Python executable known at configure time
+    set "_ament_python_executable=@PYTHON_EXECUTABLE@"
+    :: if it doesn't exist try a fall back
+    if not exist "%_ament_python_executable%" (
+      python --version > NUL 2> NUL
+      if errorlevel 1 (
+        echo error: unable to find python executable
+        exit /b 1
+      )
+      set "_ament_python_executable=python"
+    )
   )
 
-  set "ordered_packages="
   :: escape potential closing parenthesis which would break the for loop
   set "ament_python_executable=%ament_python_executable:)=^)%"
-  for /f %%p in ('""%ament_python_executable%" "%~dp0_order_packages.py" "%~2\""') do (
-    if "!ordered_packages!" NEQ "" set "ordered_packages=!ordered_packages!;"
-    set "ordered_packages=!ordered_packages!%%p"
+  for /f "delims=" %%c in ('""%_ament_python_executable%" "%~1_local_setup_util.py" bat"') do (
+    if "%AMENT_TRACE_SETUP_FILES%" NEQ "" (
+      echo %%c
+    )
+    :: only invoke non-comment lines
+    echo %%c | findstr /r "^::" >nul 2>&1
+    if errorlevel 1 (
+      call %%c
+    )
   )
-  endlocal & (
-    :: set result variable in parent scope
-    set "%~1=%ordered_packages%"
-  )
+  set _ament_python_executable=
 goto:eof
 
-:: Call the specified batch file and output the name when tracing is requested.
+
+:: call the specified batch file and output the name when tracing is requested
 :: first argument: the batch file
-:call_file
-  if "%AMENT_TRACE_SETUP_FILES%" NEQ "" echo call "%~1"
-  if exist "%~1" call "%~1%"
+:_ament_prefix_bat_call_script
+  if exist "%~1" (
+    if "%AMENT_TRACE_SETUP_FILES%" NEQ "" echo call "%~1"
+    call "%~1%"
+  ) else (
+    echo not found: "%~1" 1>&2
+  )
 goto:eof
