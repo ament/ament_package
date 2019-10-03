@@ -29,12 +29,12 @@ goto:eof
   if "%AMENT_PYTHON_EXECUTABLE%" NEQ "" (
     set "_ament_python_executable=%AMENT_PYTHON_EXECUTABLE%"
   )
-  if NOT exist %_ament_python_executable% (
+  if NOT exist "%_ament_python_executable%" (
     for %%I in (python.exe) do (
       if "%%~$PATH:I" NEQ "" set "_ament_python_executable=%%~$PATH:I"
     )
   )
-  if NOT exist %_ament_python_executable% (
+  if NOT exist "%_ament_python_executable%" (
     echo "Could not find Python executable: either add the folder of the Python executable (e.g. installed with Chocolatey) to the PATH variable or explicitly set the environment variable AMENT_PYTHON_EXECUTABLE to the full path of the Python executable"
     goto:eof
   )
