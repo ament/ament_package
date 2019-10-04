@@ -30,6 +30,8 @@ goto:eof
   )
 
   set "ordered_packages="
+  :: escape potential closing parenthesis which would break the for loop
+  set "ament_python_executable=%ament_python_executable:)=^)%"
   for /f %%p in ('""%ament_python_executable%" "%~dp0_order_packages.py" "%~2\""') do (
     if "!ordered_packages!" NEQ "" set "ordered_packages=!ordered_packages!;"
     set "ordered_packages=!ordered_packages!%%p"
