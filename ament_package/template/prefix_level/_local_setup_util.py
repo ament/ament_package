@@ -111,7 +111,7 @@ def add_package_runtime_dependencies(path, packages):
     marker_file = path.parents[1] / 'package_run_dependencies' / path.name
     if marker_file.exists():
         content = marker_file.read_text()
-        dependencies = set(content.split(os.pathsep) if content else [])
+        dependencies = set(content.split(';') if content else [])
     packages[marker_file.name] = dependencies
 
 
