@@ -193,6 +193,7 @@ def get_commands(pkg_name, prefix, primary_extension, additional_extension):
                     FORMAT_STR_INVOKE_SCRIPT.format_map({
                         'prefix': prefix,
                         'script_path': package_ext_path})]
+                break
 
     return commands
 
