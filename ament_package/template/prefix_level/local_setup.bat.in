@@ -24,14 +24,14 @@ goto:eof
 
   :: use the Python executable known at configure time
   set "ament_python_executable=@PYTHON_EXECUTABLE@"
-  :: escape potential closing parenthesis which would break the for loop
-  set "ament_python_executable=%ament_python_executable:)=^)%"
   :: allow overriding it with a custom location
   if "%AMENT_PYTHON_EXECUTABLE%" NEQ "" (
     set "ament_python_executable=%AMENT_PYTHON_EXECUTABLE%"
   )
 
   set "ordered_packages="
+  :: escape potential closing parenthesis which would break the for loop
+  set "ament_python_executable=%ament_python_executable:)=^)%"
   for /f %%p in ('""%ament_python_executable%" "%~dp0_order_packages.py" "%~2\""') do (
     if "!ordered_packages!" NEQ "" set "ordered_packages=!ordered_packages!;"
     set "ordered_packages=!ordered_packages!%%p"
