@@ -27,6 +27,7 @@ def main(argv=sys.argv[1:]):  # noqa: D103
     global FORMAT_STR_SET_ENV_VAR
     global FORMAT_STR_USE_ENV_VAR
     global FORMAT_STR_INVOKE_SCRIPT
+    global FORMAT_STR_REMOVE_TRAILING_SEPARATOR
 
     parser = argparse.ArgumentParser(
         description='Output shell commands for the packages in topological '
