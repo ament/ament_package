@@ -13,6 +13,7 @@ FORMAT_STR_COMMENT_LINE = None
 FORMAT_STR_SET_ENV_VAR = None
 FORMAT_STR_USE_ENV_VAR = None
 FORMAT_STR_INVOKE_SCRIPT = None
+FORMAT_STR_REMOVE_TRAILING_SEPARATOR = None
 
 DSV_TYPE_PREPEND_NON_DUPLICATE = 'prepend-non-duplicate'
 DSV_TYPE_PREPEND_NON_DUPLICATE_IF_EXISTS = 'prepend-non-duplicate-if-exists'
@@ -26,6 +27,7 @@ def main(argv=sys.argv[1:]):  # noqa: D103
     global FORMAT_STR_SET_ENV_VAR
     global FORMAT_STR_USE_ENV_VAR
     global FORMAT_STR_INVOKE_SCRIPT
+    global FORMAT_STR_REMOVE_TRAILING_SEPARATOR
 
     parser = argparse.ArgumentParser(
         description='Output shell commands for the packages in topological '
@@ -44,12 +46,16 @@ def main(argv=sys.argv[1:]):  # noqa: D103
         FORMAT_STR_USE_ENV_VAR = '${name}'
         FORMAT_STR_INVOKE_SCRIPT = 'AMENT_CURRENT_PREFIX="{prefix}" ' \
             '_ament_prefix_sh_source_script "{script_path}"'
+        FORMAT_STR_REMOVE_TRAILING_SEPARATOR = 'if test "$(echo -n ${name} | ' \
+            'tail -c 1)" = ":" ; then; export {name}=${{{name}%?}} ; fi'
     elif args.primary_extension == 'bat':
         FORMAT_STR_COMMENT_LINE = ':: {comment}'
         FORMAT_STR_SET_ENV_VAR = 'set "{name}={value}"'
         FORMAT_STR_USE_ENV_VAR = '%{name}%'
         FORMAT_STR_INVOKE_SCRIPT = \
             'call:_ament_prefix_bat_call_script "{script_path}"'
+        FORMAT_STR_REMOVE_TRAILING_SEPARATOR = 'if "%{name}:~-1%==";" ' \
+            'set {name}=%{name}:~0,-1%'
     else:
         assert False, 'Unknown primary extension: ' + args.primary_extension
 
@@ -66,6 +72,8 @@ def main(argv=sys.argv[1:]):  # noqa: D103
             pkg_name, prefix, args.primary_extension,
             args.additional_extension
         ):
+            print(line)
+        for line in _remove_trailing_separators():
             print(line)
 
 
@@ -310,11 +318,10 @@ def _prepend_unique_value(name, value):
             env_state[name] = set()
         if os.environ.get(name):
             env_state[name] = set(os.environ[name].split(os.pathsep))
-    if not env_state[name]:
-        extend = ''
-    else:
-        extend = os.pathsep + FORMAT_STR_USE_ENV_VAR.format_map(
-            {'name': name})
+    # prepend even if the variable has not been set yet, in case a shell script sets the
+    # same variable without the knowledge of this Python script.
+    # later _remove_trailing_separators() will cleanup any unintentional trailing separator
+    extend = os.pathsep + FORMAT_STR_USE_ENV_VAR.format_map({'name': name})
     line = FORMAT_STR_SET_ENV_VAR.format_map(
         {'name': name, 'value': value + extend})
     if value not in env_state[name]:
@@ -324,6 +331,18 @@ def _prepend_unique_value(name, value):
             return []
         line = FORMAT_STR_COMMENT_LINE.format_map({'comment': line})
     return [line]
+
+
+def _remove_trailing_separators():
+    global env_state
+    commands = []
+    for name in env_state:
+        # skip variables that already had values before this script started prepending
+        if name in os.environ:
+            continue
+        commands += [FORMAT_STR_REMOVE_TRAILING_SEPARATOR.format_map(
+            {'name': name})]
+    return commands
 
 
 def _set(name, value):
