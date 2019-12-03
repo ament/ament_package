@@ -73,8 +73,9 @@ def main(argv=sys.argv[1:]):  # noqa: D103
             args.additional_extension
         ):
             print(line)
-        for line in _remove_trailing_separators():
-            print(line)
+
+    for line in _remove_trailing_separators():
+        print(line)
 
 
 def get_packages(prefix_path):
