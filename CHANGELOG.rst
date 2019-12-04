@@ -2,6 +2,13 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.8.6 (2019-12-04)
+------------------
+* improve error message when split for dsv line raises (`#108 <https://github.com/ament/ament_package/issues/108>`_)
+* skip empty lines in dsv files (`#107 <https://github.com/ament/ament_package/issues/107>`_)
+* fix performance regression in environment setup (`#106 <https://github.com/ament/ament_package/issues/106>`_)
+* Contributors: Dirk Thomas
+
 0.8.5 (2019-11-08)
 ------------------
 * Fix sh command to remove trailing separator (`#105 <https://github.com/ament/ament_package/issues/105>`_)
