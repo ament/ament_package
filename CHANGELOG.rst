@@ -2,6 +2,11 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.8.7 (2019-12-05)
+------------------
+* fix handling of empty env var (`#110 <https://github.com/ament/ament_package/issues/110>`_)
+* Contributors: Dirk Thomas
+
 0.8.6 (2019-12-04)
 ------------------
 * improve error message when split for dsv line raises (`#108 <https://github.com/ament/ament_package/issues/108>`_)
