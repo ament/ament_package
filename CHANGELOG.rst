@@ -2,6 +2,11 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.8.8 (2019-12-10)
+------------------
+* fix removing trailing semicolon logic in bat (`#111 <https://github.com/ament/ament_package/issues/111>`_)
+* Contributors: Dirk Thomas
+
 0.8.7 (2019-12-05)
 ------------------
 * fix handling of empty env var (`#110 <https://github.com/ament/ament_package/issues/110>`_)
