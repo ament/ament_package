@@ -7,6 +7,7 @@
   <maintainer email="dthomas@osrfoundation.org">Dirk Thomas</maintainer>
   <license>Apache License 2.0</license>
 
+  <depend>python3-importlib-metadata</depend>
   <depend>python3-setuptools</depend>
 
   <test_depend>python3-flake8</test_depend>
