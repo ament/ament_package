@@ -2,6 +2,11 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.9.0 (2020-04-24)
+------------------
+* Convert format to f-string. (`#112 <https://github.com/ament/ament_package/issues/112>`_)
+* Contributors: Dirk Thomas
+
 0.8.8 (2019-12-10)
 ------------------
 * fix removing trailing semicolon logic in bat (`#111 <https://github.com/ament/ament_package/issues/111>`_)
