@@ -10,6 +10,7 @@ goto:eof
 :: Run the commands in topological order
 :: first argument: the base path to look for packages
 :_ament_run_ordered_commands
+  setlocal enabledelayedexpansion
   :: check environment variable for custom Python executable
   if "%AMENT_PYTHON_EXECUTABLE%" NEQ "" (
     if not exist "%AMENT_PYTHON_EXECUTABLE%" (
@@ -21,7 +22,7 @@ goto:eof
     :: use the Python executable known at configure time
     set "_ament_python_executable=@PYTHON_EXECUTABLE@"
     :: if it doesn't exist try a fall back
-    if not exist "%_ament_python_executable%" (
+    if not exist "!_ament_python_executable!" (
       python --version > NUL 2> NUL
       if errorlevel 1 (
         echo error: unable to find python executable
@@ -29,6 +30,10 @@ goto:eof
       )
       set "_ament_python_executable=python"
     )
+  )
+
+  endlocal & (
+    set "_ament_python_executable=%_ament_python_executable%"
   )
 
   :: escape potential closing parenthesis which would break the for loop
