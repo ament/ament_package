@@ -8,9 +8,15 @@ if [ "$_UNAME" = "Darwin" ]; then
 fi
 unset _UNAME
 
+# Collect machine architecture triplet for libraries using GNU install dirs
+_MULTIARCH_TRIPLET=`gcc -dumpmachine OUTPUT_VARIABLE MULTIARCH_TRIPLET OUTPUT_STRIP_TRAILING_WHITESPACE`
+
 if [ $_IS_DARWIN -eq 0 ]; then
   ament_prepend_unique_value LD_LIBRARY_PATH "$AMENT_CURRENT_PREFIX/lib"
+  ament_prepend_unique_value LD_LIBRARY_PATH "$AMENT_CURRENT_PREFIX/lib/$MULTIARCH_TRIPLET"
 else
   ament_prepend_unique_value DYLD_LIBRARY_PATH "$AMENT_CURRENT_PREFIX/lib"
+  ament_prepend_unique_value DYLD_LIBRARY_PATH "$AMENT_CURRENT_PREFIX/lib/$MULTIARCH_TRIPLET"
 fi
+unset _MULTIARCH_TRIPLET
 unset _IS_DARWIN
