@@ -2,6 +2,11 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.9.1 (2020-05-12)
+------------------
+* [Windows] Fix _ament_python_executable fallback code path. (`#113 <https://github.com/ament/ament_package/issues/113>`_)
+* Contributors: Dirk Thomas
+
 0.9.0 (2020-04-24)
 ------------------
 * Convert format to f-string. (`#112 <https://github.com/ament/ament_package/issues/112>`_)
