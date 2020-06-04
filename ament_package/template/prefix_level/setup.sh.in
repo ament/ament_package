@@ -7,9 +7,6 @@
 # set type of shell if not already set
 : ${AMENT_SHELL:=sh}
 
-# find parent prefix path files for all packages under the current prefix
-_RESOURCES="$(\find "$AMENT_CURRENT_PREFIX/share/ament_index/resource_index/parent_prefix_path" -mindepth 1 -maxdepth 1 2> /dev/null | \sort)"
-
 # function to append non-duplicate values to environment variables
 # using colons as separators and avoiding leading separators
 ament_append_unique_value() {
@@ -67,6 +64,10 @@ IFS="
 "
 # this variable contains the concatenated prefix paths in reverse order
 _UNIQUE_PREFIX_PATH=""
+
+# find parent prefix path files for all packages under the current prefix
+_RESOURCES="$(\find "$AMENT_CURRENT_PREFIX/share/ament_index/resource_index/parent_prefix_path" -mindepth 1 -maxdepth 1 2> /dev/null | \sort)"
+
 if [ "$AMENT_SHELL" = "zsh" ]; then
   ament_zsh_to_array _RESOURCES
 fi
