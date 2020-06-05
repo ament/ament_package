@@ -7,9 +7,6 @@
 # set type of shell if not already set
 : ${AMENT_SHELL:=sh}
 
-# find parent prefix path files for all packages under the current prefix
-_RESOURCES="$(\find "$AMENT_CURRENT_PREFIX/share/ament_index/resource_index/parent_prefix_path" -mindepth 1 -maxdepth 1 2> /dev/null | \sort)"
-
 # function to append non-duplicate values to environment variables
 # using colons as separators and avoiding leading separators
 ament_append_unique_value() {
@@ -67,42 +64,49 @@ IFS="
 "
 # this variable contains the concatenated prefix paths in reverse order
 _UNIQUE_PREFIX_PATH=""
-if [ "$AMENT_SHELL" = "zsh" ]; then
-  ament_zsh_to_array _RESOURCES
+
+# this check is used to skip parent prefix path in the Debian package
+if [ -z "@SKIP_PARENT_PREFIX_PATH@" ]; then
+  # find parent prefix path files for all packages under the current prefix
+  _RESOURCES="$(\find "$AMENT_CURRENT_PREFIX/share/ament_index/resource_index/parent_prefix_path" -mindepth 1 -maxdepth 1 2> /dev/null | \sort)"
+
+  if [ "$AMENT_SHELL" = "zsh" ]; then
+    ament_zsh_to_array _RESOURCES
+  fi
+  for _resource in $_RESOURCES; do
+    # read the content of the parent_prefix_path file
+    _PARENT_PREFIX_PATH="$(\cat "$_resource")"
+    # reverse the list
+    _REVERSED_PARENT_PREFIX_PATH=""
+    IFS=":"
+    if [ "$AMENT_SHELL" = "zsh" ]; then
+      ament_zsh_to_array _PARENT_PREFIX_PATH
+    fi
+    for _path in $_PARENT_PREFIX_PATH; do
+      # replace placeholder of current prefix
+      if [ "$_path" = "{prefix}" ]; then
+        _path="$AMENT_CURRENT_PREFIX"
+      fi
+      # avoid leading separator
+      if [ -z "$_REVERSED_PARENT_PREFIX_PATH" ]; then
+        _REVERSED_PARENT_PREFIX_PATH=$_path
+      else
+        _REVERSED_PARENT_PREFIX_PATH=$_path:$_REVERSED_PARENT_PREFIX_PATH
+      fi
+    done
+    unset _PARENT_PREFIX_PATH
+    # collect all unique parent prefix path
+    if [ "$AMENT_SHELL" = "zsh" ]; then
+      ament_zsh_to_array _REVERSED_PARENT_PREFIX_PATH
+    fi
+    for _path in $_REVERSED_PARENT_PREFIX_PATH; do
+      ament_append_unique_value _UNIQUE_PREFIX_PATH "$_path"
+    done
+    unset _REVERSED_PARENT_PREFIX_PATH
+  done
+  unset _resource
+  unset _RESOURCES
 fi
-for _resource in $_RESOURCES; do
-  # read the content of the parent_prefix_path file
-  _PARENT_PREFIX_PATH="$(\cat "$_resource")"
-  # reverse the list
-  _REVERSED_PARENT_PREFIX_PATH=""
-  IFS=":"
-  if [ "$AMENT_SHELL" = "zsh" ]; then
-    ament_zsh_to_array _PARENT_PREFIX_PATH
-  fi
-  for _path in $_PARENT_PREFIX_PATH; do
-    # replace placeholder of current prefix
-    if [ "$_path" = "{prefix}" ]; then
-      _path="$AMENT_CURRENT_PREFIX"
-    fi
-    # avoid leading separator
-    if [ -z "$_REVERSED_PARENT_PREFIX_PATH" ]; then
-      _REVERSED_PARENT_PREFIX_PATH=$_path
-    else
-      _REVERSED_PARENT_PREFIX_PATH=$_path:$_REVERSED_PARENT_PREFIX_PATH
-    fi
-  done
-  unset _PARENT_PREFIX_PATH
-  # collect all unique parent prefix path
-  if [ "$AMENT_SHELL" = "zsh" ]; then
-    ament_zsh_to_array _REVERSED_PARENT_PREFIX_PATH
-  fi
-  for _path in $_REVERSED_PARENT_PREFIX_PATH; do
-    ament_append_unique_value _UNIQUE_PREFIX_PATH "$_path"
-  done
-  unset _REVERSED_PARENT_PREFIX_PATH
-done
-unset _resource
-unset _RESOURCES
 
 # append this directory to the prefix path
 ament_append_unique_value _UNIQUE_PREFIX_PATH "$AMENT_CURRENT_PREFIX"
