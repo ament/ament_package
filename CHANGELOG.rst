@@ -2,6 +2,11 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.8.9 (2020-06-05)
+------------------
+* add configure-time flag to skip parent_prefix_path (`#115 <https://github.com/ament/ament_package/issues/115>`_)
+* [windows] fix _ament_python_executable fallback code path (`#113 <https://github.com/ament/ament_package/issues/113>`_)
+
 0.8.8 (2019-12-10)
 ------------------
 * fix removing trailing semicolon logic in bat (`#111 <https://github.com/ament/ament_package/issues/111>`_)
