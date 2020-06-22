@@ -23,5 +23,5 @@ try:
         __version__ = 'unset'
     finally:
         del importlib_metadata
-except (ImportError, ModuleNotFoundError):
+except ImportError:
     __version__ = 'unset'
