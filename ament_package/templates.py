@@ -15,13 +15,17 @@
 import os
 import re
 
-import pkg_resources
+try:
+    import importlib.resources as importlib_resources
+except ModuleNotFoundError:
+    import importlib_resources
 
 IS_WINDOWS = os.name == 'nt'
 
 
 def get_environment_hook_template_path(name):
-    return pkg_resources.resource_filename('ament_package', 'template/environment_hook/' + name)
+    with importlib_resources.path('ament_package.template.environment_hook', name) as path:
+        return str(path)
 
 
 def get_package_level_template_names(all_platforms=False):
@@ -37,7 +41,8 @@ def get_package_level_template_names(all_platforms=False):
 
 
 def get_package_level_template_path(name):
-    return pkg_resources.resource_filename('ament_package', 'template/package_level/' + name)
+    with importlib_resources.path('ament_package.template.package_level', name) as path:
+        return str(path)
 
 
 def get_prefix_level_template_names(*, all_platforms=False):
@@ -56,7 +61,8 @@ def get_prefix_level_template_names(*, all_platforms=False):
 
 
 def get_prefix_level_template_path(name):
-    return pkg_resources.resource_filename('ament_package', 'template/prefix_level/' + name)
+    with importlib_resources.path('ament_package.template.prefix_level', name) as path:
+        return str(path)
 
 
 def get_isolated_prefix_level_template_names(*, all_platforms=False):
@@ -75,8 +81,8 @@ def get_isolated_prefix_level_template_names(*, all_platforms=False):
 
 
 def get_isolated_prefix_level_template_path(name):
-    return pkg_resources.resource_filename(
-        'ament_package', 'template/isolated_prefix_level/' + name)
+    with importlib_resources.path('ament_package.template.isolated_prefix_level', name) as path:
+        return str(path)
 
 
 def configure_file(template_file, environment):
