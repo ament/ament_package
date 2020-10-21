@@ -122,7 +122,7 @@ fi
 for _path in $_UNIQUE_PREFIX_PATH; do
   # trace output
   if [ -n "$AMENT_TRACE_SETUP_FILES" ]; then
-    echo ". \"$_path/local_setup.$AMENT_SHELL\""
+    echo "# . \"$_path/local_setup.$AMENT_SHELL\""
   fi
   if [ -f "$_path/local_setup.$AMENT_SHELL" ]; then
     if [ "$AMENT_SHELL" = "sh" ]; then
