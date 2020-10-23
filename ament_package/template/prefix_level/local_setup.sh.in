@@ -39,7 +39,7 @@ fi
 _ament_prefix_sh_source_script() {
   if [ -f "$1" ]; then
     if [ -n "$AMENT_TRACE_SETUP_FILES" ]; then
-      echo ". \"$1\""
+      echo "# . \"$1\""
     fi
     . "$1"
   else
@@ -107,10 +107,21 @@ _ament_ordered_commands="$($_ament_python_executable "$_ament_prefix_sh_AMENT_CU
 unset _ament_additional_extension
 unset _ament_python_executable
 if [ -n "$AMENT_TRACE_SETUP_FILES" ]; then
-  echo "Execute generated script:"
-  echo "<<<"
+  echo "_ament_prefix_sh_source_script() {
+    if [ -f \"\$1\" ]; then
+      if [ -n \"\$AMENT_TRACE_SETUP_FILES\" ]; then
+        echo \"# . \\\"\$1\\\"\"
+      fi
+      . \"\$1\"
+    else
+      echo \"not found: \\\"\$1\\\"\" 1>&2
+    fi
+  }"
+  echo "# Execute generated script:"
+  echo "# <<<"
   echo "${_ament_ordered_commands}"
-  echo ">>>"
+  echo "# >>>"
+  echo "unset _ament_prefix_sh_source_script"
 fi
 eval "${_ament_ordered_commands}"
 unset _ament_ordered_commands
