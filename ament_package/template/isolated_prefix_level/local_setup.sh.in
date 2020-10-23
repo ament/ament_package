@@ -40,7 +40,7 @@ for _package in $_ORDERED_PACKAGES; do
   _path="$AMENT_CURRENT_PREFIX/share/$_package/local_setup.$AMENT_SHELL"
   # trace output
   if [ -n "$AMENT_TRACE_SETUP_FILES" ]; then
-    echo ". \"$_path\""
+    echo "# . \"$_path\""
   fi
   if [ -f "$_path" ]; then
     . "$_path"
