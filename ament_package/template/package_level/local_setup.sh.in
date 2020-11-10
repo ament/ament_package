@@ -115,7 +115,7 @@ if [ -z "$AMENT_RETURN_ENVIRONMENT_HOOKS" ]; then
       IFS=$_package_local_setup_IFS
       # trace output
       if [ -n "$AMENT_TRACE_SETUP_FILES" ]; then
-        echo ". \"$_hook\""
+        echo "# . \"$_hook\""
       fi
       . "$_hook"
     fi

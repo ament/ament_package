@@ -17,6 +17,6 @@ ament_zsh_to_array() {
 
 # trace output
 if [ -n "$AMENT_TRACE_SETUP_FILES" ]; then
-  echo ". \"$AMENT_CURRENT_PREFIX/local_setup.sh\""
+  echo "# . \"$AMENT_CURRENT_PREFIX/local_setup.sh\""
 fi
 . "$AMENT_CURRENT_PREFIX/local_setup.sh"
