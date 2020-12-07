@@ -2,8 +2,8 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.10.0 (2020-12-07)
+-------------------
 * make AMENT_TRACE_SETUP_FILES output sourceable (`#120 <https://github.com/ament/ament_package/issues/120>`_)
 * update maintainers
 * Switch ament_package to using importlib. (`#118 <https://github.com/ament/ament_package/issues/118>`_)
