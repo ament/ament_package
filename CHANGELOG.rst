@@ -2,6 +2,14 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* make AMENT_TRACE_SETUP_FILES output sourceable (`#120 <https://github.com/ament/ament_package/issues/120>`_)
+* update maintainers
+* Switch ament_package to using importlib. (`#118 <https://github.com/ament/ament_package/issues/118>`_)
+* Add pytest.ini so local tests don't display warning (`#117 <https://github.com/ament/ament_package/issues/117>`_)
+* Contributors: Chris Lalancette, Dirk Thomas, Mabel Zhang
+
 0.9.2 (2020-06-05)
 ------------------
 * add configure-time flag to skip parent_prefix_path (`#115 <https://github.com/ament/ament_package/issues/115>`_)
