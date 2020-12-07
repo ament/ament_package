@@ -2,6 +2,11 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.9.3 (2020-12-07)
+------------------
+* make AMENT_TRACE_SETUP_FILES output sourceable (`#120 <https://github.com/ament/ament_package/issues/120>`_) (`#121 <https://github.com/ament/ament_package/issues/121>`_)
+* Contributors: Dirk Thomas
+
 0.9.2 (2020-06-05)
 ------------------
 * add configure-time flag to skip parent_prefix_path (`#115 <https://github.com/ament/ament_package/issues/115>`_)
