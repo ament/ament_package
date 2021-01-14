@@ -16,7 +16,10 @@
 
 # set version number
 try:
-    import importlib_metadata
+    try:
+        import importlib.metadata as importlib_metadata
+    except ModuleNotFoundError:
+        import importlib_metadata
     try:
         __version__ = importlib_metadata.version('ament_package')
     except importlib_metadata.PackageNotFoundError:
