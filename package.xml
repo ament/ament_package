@@ -10,6 +10,7 @@
   <author email="dthomas@osrfoundation.org">Dirk Thomas</author>
 
   <depend>python3-importlib-metadata</depend>
+  <depend>python3-importlib-resources</depend>
   <depend>python3-setuptools</depend>
 
   <test_depend>python3-flake8</test_depend>
