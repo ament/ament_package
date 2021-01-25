@@ -2,8 +2,8 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.10.1 (2021-01-25)
+-------------------
 * Support Python 3.8-provided importlib.metadata (`#124 <https://github.com/ament/ament_package/issues/124>`_)
 * Declare missing dependency on python3-importlib-resources (`#123 <https://github.com/ament/ament_package/issues/123>`_)
 * Contributors: Scott K Logan
