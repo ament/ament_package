@@ -74,7 +74,8 @@ def generate_setuptools_dict(package_xml_path=os.path.curdir, **kwargs):
     :raises: :exc:`IOError`
     """
     filename = os.path.join(package_xml_path, 'package.xml')
-    package_xml = dom.parse(open(filename))
+    with open(filename) as f:
+        package_xml = dom.parse(f)
 
     data = {}
     data['name'] = _get_single_element(package_xml, 'name')
