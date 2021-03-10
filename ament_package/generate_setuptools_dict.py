@@ -40,6 +40,10 @@ def _update_people_info(document, tag_name, data):
     """Set the author or maintainer field in data."""
     people = [Person(*ea) for ea in _get_elements_and_attributes(document, tag_name, 'email')]
 
+    # If no people, do not set the field
+    if len(people) == 0:
+        return
+
     # either set one person with one email or join all in a single field
     if len(people) == 1 and people[0].email:
         data[tag_name] = people[0].name
