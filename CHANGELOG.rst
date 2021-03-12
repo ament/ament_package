@@ -2,6 +2,10 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Generate Setuptools Dict Helper Method (`#126 <https://github.com/ament/ament_package/issues/126>`_) (`#128 <https://github.com/ament/ament_package/issues/128>`_)
+
 0.9.3 (2020-12-07)
 ------------------
 * make AMENT_TRACE_SETUP_FILES output sourceable (`#120 <https://github.com/ament/ament_package/issues/120>`_) (`#121 <https://github.com/ament/ament_package/issues/121>`_)
