@@ -2,6 +2,12 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Generate Setuptools Dict Helper Method (`#126 <https://github.com/ament/ament_package/issues/126>`_)
+* Add Audrow as a maintainer (`#127 <https://github.com/ament/ament_package/issues/127>`_)
+* Contributors: Audrow Nash, David V. Lu!!
+
 0.10.1 (2021-01-25)
 -------------------
 * Support Python 3.8-provided importlib.metadata (`#124 <https://github.com/ament/ament_package/issues/124>`_)
