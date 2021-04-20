@@ -2,6 +2,11 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Revert "Generate Setuptools Dict Helper Method (`#126 <https://github.com/ament/ament_package/issues/126>`_)" (`#131 <https://github.com/ament/ament_package/issues/131>`_)
+* Contributors: Audrow Nash
+
 0.11.0 (2021-03-18)
 -------------------
 * Generate Setuptools Dict Helper Method (`#126 <https://github.com/ament/ament_package/issues/126>`_)
