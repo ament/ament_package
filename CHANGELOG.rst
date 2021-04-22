@@ -4,6 +4,10 @@ Changelog for package ament_package
 
 Forthcoming
 -----------
+* Revert "Generate Setuptools Dict Helper Method (`#126 <https://github.com/ament/ament_package/issues/126>`_) (`#128 <https://github.com/ament/ament_package/issues/128>`_)" (`#132 <https://github.com/ament/ament_package/issues/132>`_)
+
+0.9.4 (2021-03-12)
+------------------
 * Generate Setuptools Dict Helper Method (`#126 <https://github.com/ament/ament_package/issues/126>`_) (`#128 <https://github.com/ament/ament_package/issues/128>`_)
 
 0.9.3 (2020-12-07)
