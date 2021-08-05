@@ -35,9 +35,7 @@ and provides tooling to build these federated packages together.""",
     package_data={
         'ament_package': [
             'template/environment_hook/*',
-            'template/isolated_prefix_level/*',
             'template/package_level/*',
-            'template/prefix_level/*',
         ],
     },
 )
