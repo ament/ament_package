@@ -18,7 +18,7 @@ fi
 : ${AMENT_SHELL:=sh}
 
 # use the Python executable known at configure time
-_ament_python_executable="@PYTHON_EXECUTABLE@"
+_ament_python_executable="@ament_package_PYTHON_EXECUTABLE@"
 # allow overriding it with a custom location
 if [ -n "$AMENT_PYTHON_EXECUTABLE" ]; then
   _ament_python_executable="$AMENT_PYTHON_EXECUTABLE"

@@ -20,7 +20,7 @@ goto:eof
     set "_ament_python_executable=%AMENT_PYTHON_EXECUTABLE%"
   ) else (
     :: use the Python executable known at configure time
-    set "_ament_python_executable=@PYTHON_EXECUTABLE@"
+    set "_ament_python_executable=@ament_package_PYTHON_EXECUTABLE@"
     :: if it doesn't exist try a fall back
     if not exist "!_ament_python_executable!" (
       python --version > NUL 2> NUL
