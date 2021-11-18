@@ -4,11 +4,13 @@
   <name>ament_package</name>
   <version>0.12.0</version>
   <description>The parser for the manifest files in the ament buildsystem.</description>
-  <maintainer email="mabel@openrobotics.org">Mabel Zhang</maintainer>
+
   <maintainer email="audrow@openrobotics.org">Audrow Nash</maintainer>
+
   <license>Apache License 2.0</license>
 
   <author email="dthomas@osrfoundation.org">Dirk Thomas</author>
+  <author email="mabel@openrobotics.org">Mabel Zhang</author>
 
   <depend>python3-importlib-metadata</depend>
   <depend>python3-importlib-resources</depend>
