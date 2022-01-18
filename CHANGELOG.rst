@@ -2,6 +2,9 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.14.0 (2022-01-18)
+-------------------
+
 0.12.1 (2022-01-14)
 -------------------
 * Set forthcoming for previous version
