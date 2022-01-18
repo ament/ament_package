@@ -2,8 +2,12 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.13.0 (2022-01-18)
+-------------------
+* Add support for appending to environment variables (`#130 <https://github.com/ament/ament_package/issues/130>`_) (`#137 <https://github.com/ament/ament_package/issues/137>`_)
+* Update maintainers to Audrow Nash (`#135 <https://github.com/ament/ament_package/issues/135>`_) (`#136 <https://github.com/ament/ament_package/issues/136>`_)
+* Contributors: Scott K Logan, Audrow Nash
+
 * Revert "Generate Setuptools Dict Helper Method (`#126 <https://github.com/ament/ament_package/issues/126>`_)" (`#131 <https://github.com/ament/ament_package/issues/131>`_)
 * Contributors: Audrow Nash
 
