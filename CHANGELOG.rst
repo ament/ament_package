@@ -2,8 +2,8 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.15.1 (2022-09-13)
+-------------------
 * Mirror rolling to master
 * Remove unused isolated prefix level templates (`#133 <https://github.com/ament/ament_package/issues/133>`_)
 * Contributors: Audrow Nash, Shane Loretz
