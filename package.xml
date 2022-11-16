@@ -5,10 +5,11 @@
   <version>0.15.1</version>
   <description>The parser for the manifest files in the ament buildsystem.</description>
 
-  <maintainer email="audrow@openrobotics.org">Audrow Nash</maintainer>
+  <maintainer email="dharini@openrobotics.org">Dharini Dutia</maintainer>
 
   <license>Apache License 2.0</license>
 
+  <author email="audrow@openrobotics.org">Audrow Nash</author>
   <author email="dthomas@osrfoundation.org">Dirk Thomas</author>
   <author email="mabel@openrobotics.org">Mabel Zhang</author>
 
