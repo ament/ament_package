@@ -2,8 +2,8 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.15.2 (2023-02-14)
+-------------------
 * [rolling] Update maintainers - 2022-11-07 (`#138 <https://github.com/ament/ament_package/issues/138>`_)
 * Contributors: Audrow Nash
 
