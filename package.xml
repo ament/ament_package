@@ -13,9 +13,9 @@
   <author email="dthomas@osrfoundation.org">Dirk Thomas</author>
   <author email="mabel@openrobotics.org">Mabel Zhang</author>
 
-  <depend>python3-importlib-metadata</depend>
-  <depend>python3-importlib-resources</depend>
-  <depend>python3-setuptools</depend>
+  <exec_depend>python3-importlib-metadata</exec_depend>
+  <exec_depend>python3-importlib-resources</exec_depend>
+  <exec_depend>python3-setuptools</exec_depend>
 
   <test_depend>python3-flake8</test_depend>
   <test_depend>python3-pytest</test_depend>
