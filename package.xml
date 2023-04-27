@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="2">
   <name>ament_package</name>
-  <version>0.15.3</version>
+  <version>0.16.0</version>
   <description>The parser for the manifest files in the ament buildsystem.</description>
 
   <maintainer email="dharini@openrobotics.org">Dharini Dutia</maintainer>
