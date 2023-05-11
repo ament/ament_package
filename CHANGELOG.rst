@@ -2,8 +2,8 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.16.1 (2023-05-11)
+-------------------
 * Make python dependencies exec_depend. (`#140 <https://github.com/ament/ament_package/issues/140>`_)
 * Contributors: Chris Lalancette
 
