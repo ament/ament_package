@@ -2,8 +2,8 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.16.2 (2023-05-12)
+-------------------
 * Add setuptools dependency back in. (`#141 <https://github.com/ament/ament_package/issues/141>`_)
 * Contributors: Chris Lalancette
 
