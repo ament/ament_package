@@ -23,12 +23,10 @@ except ModuleNotFoundError:
 IS_WINDOWS = os.name == 'nt'
 
 
-if hasattr(importlib_resources, 'files'):
-    def _get_path(template, name):
-        path = importlib_resources.files(template).joinpath(name)
-        return str(path)
-else:
-    def _get_path(template, name):
+def _get_path(template, name):
+    if hasattr(importlib_resources, 'files'):
+        return importlib_resources.files(template).joinpath(name)
+    else:
         with importlib_resources.path(template, name) as path:
             return str(path)
 
