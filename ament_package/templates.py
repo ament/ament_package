@@ -23,9 +23,16 @@ except ModuleNotFoundError:
 IS_WINDOWS = os.name == 'nt'
 
 
+def _get_path(template, name):
+    if hasattr(importlib_resources, 'files'):
+        return importlib_resources.files(template).joinpath(name)
+    else:
+        with importlib_resources.path(template, name) as path:
+            return str(path)
+
+
 def get_environment_hook_template_path(name):
-    with importlib_resources.path('ament_package.template.environment_hook', name) as path:
-        return str(path)
+    return _get_path('ament_package.template.environment_hook', name)
 
 
 def get_package_level_template_names(all_platforms=False):
@@ -41,8 +48,7 @@ def get_package_level_template_names(all_platforms=False):
 
 
 def get_package_level_template_path(name):
-    with importlib_resources.path('ament_package.template.package_level', name) as path:
-        return str(path)
+    return _get_path('ament_package.template.package_level', name)
 
 
 def get_prefix_level_template_names(*, all_platforms=False):
@@ -61,8 +67,7 @@ def get_prefix_level_template_names(*, all_platforms=False):
 
 
 def get_prefix_level_template_path(name):
-    with importlib_resources.path('ament_package.template.prefix_level', name) as path:
-        return str(path)
+    return _get_path('ament_package.template.prefix_level', name)
 
 
 def configure_file(template_file, environment):
