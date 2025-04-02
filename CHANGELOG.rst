@@ -2,6 +2,26 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Simplify removing leading and trailing separators (`#152 <https://github.com/ament/ament_package/issues/152>`_) (`#153 <https://github.com/ament/ament_package/issues/153>`_)
+  Previously, we checked if the leading or trailing character was a colon
+  and then used a wildcard to remove it.
+  It is simpler to just remove a leading or trailing colon. This has the
+  added benefit of only using shell built-in functions.
+  (cherry picked from commit 9b09d9471f8bf77d5c847a6cd973da79d18d2e11)
+  Co-authored-by: Rob Woolley <rob.woolley@windriver.com>
+* Always consider .dsv files, even when no shell specific script exists (`#147 <https://github.com/ament/ament_package/issues/147>`_) (`#151 <https://github.com/ament/ament_package/issues/151>`_)
+  Copy of https://github.com/colcon/colcon-core/pull/244/commits/3697164b248d578ec15e9f0d369d005cf1d9894a
+  (cherry picked from commit 01592eb7c227ec12304635e530984d29055463d7)
+  Co-authored-by: Addisu Z. Taddese <addisuzt@intrinsic.ai>
+* Remove CODEOWNERS and mirror-rolling-to-master. (`#149 <https://github.com/ament/ament_package/issues/149>`_) (`#150 <https://github.com/ament/ament_package/issues/150>`_)
+  They are both outdated and both no longer serving their
+  intended purpose.
+  (cherry picked from commit 5090b28ef9d02fffc41cc1cd04883e3ac2c8f4a6)
+  Co-authored-by: Chris Lalancette <clalancette@gmail.com>
+* Contributors: mergify[bot]
+
 0.16.3 (2024-01-24)
 -------------------
 * Migrate from legacy importlib-resources (`#143 <https://github.com/ament/ament_package/issues/143>`_)
