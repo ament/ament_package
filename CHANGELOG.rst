@@ -2,8 +2,8 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.16.4 (2025-04-02)
+-------------------
 * Simplify removing leading and trailing separators (`#152 <https://github.com/ament/ament_package/issues/152>`_) (`#153 <https://github.com/ament/ament_package/issues/153>`_)
   Previously, we checked if the leading or trailing character was a colon
   and then used a wildcard to remove it.
