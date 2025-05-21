@@ -48,10 +48,8 @@ def main(argv=sys.argv[1:]):  # noqa: D103
         FORMAT_STR_USE_ENV_VAR = '${name}'
         FORMAT_STR_INVOKE_SCRIPT = 'AMENT_CURRENT_PREFIX="{prefix}" ' \
             '_ament_prefix_sh_source_script "{script_path}"'
-        FORMAT_STR_REMOVE_LEADING_SEPARATOR = 'if [ "$(echo -n ${name} | ' \
-            'head -c 1)" = ":" ]; then export {name}=${{{name}#?}} ; fi'
-        FORMAT_STR_REMOVE_TRAILING_SEPARATOR = 'if [ "$(echo -n ${name} | ' \
-            'tail -c 1)" = ":" ]; then export {name}=${{{name}%?}} ; fi'
+        FORMAT_STR_REMOVE_LEADING_SEPARATOR = 'export {name}=${{{name}#:}}'
+        FORMAT_STR_REMOVE_TRAILING_SEPARATOR = 'export {name}=${{{name}%:}}'
     elif args.primary_extension == 'bat':
         FORMAT_STR_COMMENT_LINE = ':: {comment}'
         FORMAT_STR_SET_ENV_VAR = 'set "{name}={value}"'
