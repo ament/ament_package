@@ -32,7 +32,7 @@ and provides tooling to build these federated packages together.""",
     license='Apache License, Version 2.0',
     extras_require={
         'test': [
-            'pytest','flake8',
+            'pytest', 'flake8',
         ],
     },
     package_data={
