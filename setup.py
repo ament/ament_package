@@ -22,7 +22,6 @@ setup(
     keywords=['ROS'],
     classifiers=[
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python',
         'Topic :: Software Development',
     ],
@@ -31,7 +30,11 @@ setup(
 Ament defines metainformation for packages, their dependencies,
 and provides tooling to build these federated packages together.""",
     license='Apache License, Version 2.0',
-    tests_require=['flake8', 'pytest'],
+    extras_require={
+        'test': [
+            'pytest', 'flake8',
+        ],
+    },
     package_data={
         'ament_package': [
             'template/environment_hook/*',
