@@ -15,16 +15,6 @@
 """Package providing the templates for various shell scripts."""
 
 # set version number
-try:
-    try:
-        import importlib.metadata as importlib_metadata
-    except ModuleNotFoundError:
-        import importlib_metadata
-    try:
-        __version__ = importlib_metadata.version('ament_package')
-    except importlib_metadata.PackageNotFoundError:
-        __version__ = 'unset'
-    finally:
-        del importlib_metadata
-except ImportError:
-    __version__ = 'unset'
+
+from importlib import metadata
+__version__ = metadata.version('ament_package')
