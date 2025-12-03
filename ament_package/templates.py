@@ -12,23 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from importlib import resources
 import os
 import re
-
-try:
-    import importlib.resources as importlib_resources
-except ModuleNotFoundError:
-    import importlib_resources
 
 IS_WINDOWS = os.name == 'nt'
 
 
 def _get_path(template, name):
-    if hasattr(importlib_resources, 'files'):
-        return importlib_resources.files(template).joinpath(name)
-    else:
-        with importlib_resources.path(template, name) as path:
-            return str(path)
+    return resources.files(template).joinpath(name)
 
 
 def get_environment_hook_template_path(name):
