@@ -2,6 +2,14 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* fix setuptools deprecations (`#156 <https://github.com/ament/ament_package/issues/156>`_) (`#159 <https://github.com/ament/ament_package/issues/159>`_)
+  (cherry picked from commit 7b5dea841784a511e275ac0d12a8a4036d943838)
+  Co-authored-by: mosfet80 <10235105+mosfet80@users.noreply.github.com>
+  Co-authored-by: Alejandro Hernández Cordero <ahcorde@gmail.com>
+* Contributors: mergify[bot]
+
 0.16.4 (2025-04-02)
 -------------------
 * Simplify removing leading and trailing separators (`#152 <https://github.com/ament/ament_package/issues/152>`_) (`#153 <https://github.com/ament/ament_package/issues/153>`_)
