@@ -2,8 +2,8 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.14.2 (2026-02-13)
+-------------------
 * fix setuptools deprecations (`#156 <https://github.com/ament/ament_package/issues/156>`_) (`#160 <https://github.com/ament/ament_package/issues/160>`_)
 * Contributors: mergify[bot]
 
