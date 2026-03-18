@@ -15,12 +15,19 @@ FORMAT_STR_USE_ENV_VAR = None
 FORMAT_STR_INVOKE_SCRIPT = None
 FORMAT_STR_REMOVE_TRAILING_SEPARATOR = None
 
+# Track primary extension so helpers can apply shell-specific behavior.
+PRIMARY_EXTENSION = None
+
 DSV_TYPE_APPEND_NON_DUPLICATE = 'append-non-duplicate'
 DSV_TYPE_PREPEND_NON_DUPLICATE = 'prepend-non-duplicate'
 DSV_TYPE_PREPEND_NON_DUPLICATE_IF_EXISTS = 'prepend-non-duplicate-if-exists'
 DSV_TYPE_SET = 'set'
 DSV_TYPE_SET_IF_UNSET = 'set-if-unset'
 DSV_TYPE_SOURCE = 'source'
+
+# Fish treats PATH / MANPATH / CDPATH as list variables.
+# Use fish list prepend/append syntax for these vars.
+_FISH_LIST_VARS = {'PATH', 'MANPATH', 'CDPATH'}
 
 
 def main(argv=sys.argv[1:]):  # noqa: D103
@@ -30,6 +37,7 @@ def main(argv=sys.argv[1:]):  # noqa: D103
     global FORMAT_STR_INVOKE_SCRIPT
     global FORMAT_STR_REMOVE_LEADING_SEPARATOR
     global FORMAT_STR_REMOVE_TRAILING_SEPARATOR
+    global PRIMARY_EXTENSION
 
     parser = argparse.ArgumentParser(
         description='Output shell commands for the packages in topological '
@@ -41,6 +49,8 @@ def main(argv=sys.argv[1:]):  # noqa: D103
         'additional_extension', nargs='?',
         help='The additional file extension to be considered')
     args = parser.parse_args(argv)
+
+    PRIMARY_EXTENSION = args.primary_extension
 
     if args.primary_extension == 'sh':
         FORMAT_STR_COMMENT_LINE = '# {comment}'
@@ -61,6 +71,31 @@ def main(argv=sys.argv[1:]):  # noqa: D103
             'call:_ament_prefix_bat_strip_leading_semicolon "{name}"'
         FORMAT_STR_REMOVE_TRAILING_SEPARATOR = \
             'call:_ament_prefix_bat_strip_trailing_semicolon "{name}"'
+    elif args.primary_extension == 'fish':
+        FORMAT_STR_COMMENT_LINE = '# {comment}'
+        FORMAT_STR_SET_ENV_VAR = 'set -gx {name} "{value}"'
+        FORMAT_STR_USE_ENV_VAR = '${name}'
+        # Keep AMENT_CURRENT_PREFIX local to this begin/end block
+        # so that it doesn't affect other scripts that are sourced.
+        FORMAT_STR_INVOKE_SCRIPT = (
+            'begin\n'
+            '    set -lx AMENT_CURRENT_PREFIX "{prefix}"\n'
+            '    if test -f "{script_path}"\n'
+            '        if test -n "$AMENT_TRACE_SETUP_FILES"\n'
+            '            echo "# source \\"{script_path}\\""\n'
+            '        end\n'
+            '        source "{script_path}"\n'
+            '    else\n'
+            '        echo "not found: \\"{script_path}\\"" 1>&2\n'
+            '    end\n'
+            'end'
+        )
+        FORMAT_STR_REMOVE_LEADING_SEPARATOR = (
+            "set -gx {name} (string replace --regex '^:' '' -- \"${name}\")"
+        )
+        FORMAT_STR_REMOVE_TRAILING_SEPARATOR = (
+            "set -gx {name} (string replace --regex ':$' '' -- \"${name}\")"
+        )
     else:
         assert False, 'Unknown primary extension: ' + args.primary_extension
 
@@ -352,6 +387,22 @@ def _append_unique_value(name, value):
             env_state[name] = set(os.environ[name].split(os.pathsep))
         else:
             env_state[name] = set()
+
+    if PRIMARY_EXTENSION == 'fish' and name in _FISH_LIST_VARS:
+        # Fish list variables: use list-append syntax to avoid space-joining.
+        if value not in env_state[name]:
+            env_state[name].add(value)
+            line = (
+                'contains -- "{value}" ${name}; '
+                'or set -gx {name} ${name} "{value}"'
+            ).format(name=name, value=value)
+        else:
+            if not _include_comments():
+                return []
+            line = FORMAT_STR_COMMENT_LINE.format_map(
+                {'comment': 'already in {}: {}'.format(name, value)})
+        return [line]
+
     # append even if the variable has not been set yet, in case a shell script sets the
     # same variable without the knowledge of this Python script.
     # later _remove_ending_separators() will cleanup any unintentional trailing separator
@@ -373,6 +424,22 @@ def _prepend_unique_value(name, value):
             env_state[name] = set(os.environ[name].split(os.pathsep))
         else:
             env_state[name] = set()
+
+    if PRIMARY_EXTENSION == 'fish' and name in _FISH_LIST_VARS:
+        # Fish list variables: use list-prepend syntax to avoid space-joining.
+        if value not in env_state[name]:
+            env_state[name].add(value)
+            line = (
+                'contains -- "{value}" ${name}; '
+                'or set -gx {name} "{value}" ${name}'
+            ).format(name=name, value=value)
+        else:
+            if not _include_comments():
+                return []
+            line = FORMAT_STR_COMMENT_LINE.format_map(
+                {'comment': 'already in {}: {}'.format(name, value)})
+        return [line]
+
     # prepend even if the variable has not been set yet, in case a shell script sets the
     # same variable without the knowledge of this Python script.
     # later _remove_ending_separators() will cleanup any unintentional trailing separator
@@ -394,6 +461,10 @@ def _remove_ending_separators():
         # skip variables that already had values before this script started prepending
         if name in os.environ:
             continue
+        # Fish list variables don't use the colon-string approach so they
+        # never accumulate stray separators.
+        if PRIMARY_EXTENSION == 'fish' and name in _FISH_LIST_VARS:
+            continue
         commands += [
             FORMAT_STR_REMOVE_LEADING_SEPARATOR.format_map({'name': name}),
             FORMAT_STR_REMOVE_TRAILING_SEPARATOR.format_map({'name': name})]
@@ -408,8 +479,13 @@ def _set(name, value):
 
 
 def _set_if_unset(name, value):
-    line = FORMAT_STR_SET_ENV_VAR.format_map(
-        {'name': name, 'value': value})
+    if PRIMARY_EXTENSION == 'fish':
+        # Fish: set -q NAME returns 0 if the variable is set.
+        line = 'set -q {name}; or set -gx {name} "{value}"'.format(
+            name=name, value=value)
+    else:
+        line = FORMAT_STR_SET_ENV_VAR.format_map(
+            {'name': name, 'value': value})
     if env_state.get(name, os.environ.get(name)):
         line = FORMAT_STR_COMMENT_LINE.format_map({'comment': line})
     return [line]

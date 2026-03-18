@@ -31,6 +31,7 @@ def get_package_level_template_names(all_platforms=False):
     names = ['local_setup.%s.in' % ext for ext in [
         'bash',
         'bat',
+        'fish',
         'sh',
         'zsh',
     ]]
@@ -52,6 +53,7 @@ def get_prefix_level_template_names(*, all_platforms=False):
     ]
     names = ['local_setup.%s' % ext for ext in extensions] + \
         ['setup.%s' % ext for ext in extensions] + \
+        ['local_setup.fish.in', 'setup.fish'] + \
         ['_local_setup_util.py']
     if not all_platforms:
         names = [name for name in names if _is_platform_specific_extension(name)]

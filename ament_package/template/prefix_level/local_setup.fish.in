@@ -1,0 +1,44 @@
+# generated from ament_package/template/prefix_level/local_setup.fish.in
+
+# Prefer AMENT_CURRENT_PREFIX (set by setup.fish); otherwise use install-time prefix.
+set -l _ament_prefix_fish_AMENT_CURRENT_PREFIX "@CMAKE_INSTALL_PREFIX@"
+if test -n "$AMENT_CURRENT_PREFIX"
+    set _ament_prefix_fish_AMENT_CURRENT_PREFIX "$AMENT_CURRENT_PREFIX"
+end
+
+if not test -d "$_ament_prefix_fish_AMENT_CURRENT_PREFIX"
+    echo "The build-time prefix \"$_ament_prefix_fish_AMENT_CURRENT_PREFIX\" \
+doesn't exist. Either source a script for a different shell or set \
+AMENT_CURRENT_PREFIX explicitly." 1>&2
+    set -e _ament_prefix_fish_AMENT_CURRENT_PREFIX
+    return 1
+end
+
+# Locate a Python interpreter.
+set -l _ament_python_executable "@ament_package_PYTHON_EXECUTABLE@"
+if test -n "$AMENT_PYTHON_EXECUTABLE"
+    set _ament_python_executable "$AMENT_PYTHON_EXECUTABLE"
+end
+if not test -f "$_ament_python_executable"
+    if command -v python3 > /dev/null 2>&1
+        set _ament_python_executable (python3 -c "import sys; print(sys.executable)")
+    else
+        echo "error: unable to find a python3 executable" 1>&2
+        set -e _ament_prefix_fish_AMENT_CURRENT_PREFIX
+        return 1
+    end
+end
+
+# Generate fish setup commands in topological order and source them.
+# psub turns Python stdout into a real file path for source.
+# Generated commands use fish-native env handling (set -gx and list PATH).
+if test -n "$AMENT_TRACE_SETUP_FILES"
+    echo "# source (\"$_ament_python_executable\" \
+\"$_ament_prefix_fish_AMENT_CURRENT_PREFIX/_local_setup_util.py\" fish | psub)"
+end
+
+source (command "$_ament_python_executable" \
+    "$_ament_prefix_fish_AMENT_CURRENT_PREFIX/_local_setup_util.py" fish | psub)
+
+set -e _ament_python_executable
+set -e _ament_prefix_fish_AMENT_CURRENT_PREFIX
