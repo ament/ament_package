@@ -2,7 +2,7 @@
 
 # Determine prefix from this script's location at runtime.
 # 'status -f' gives the path of the currently sourced file in fish.
-set -l AMENT_CURRENT_PREFIX (cd (dirname (status -f)); and pwd)
+set -l AMENT_CURRENT_PREFIX (builtin realpath (dirname (status -f)))
 
 # trace output
 if test -n "$AMENT_TRACE_SETUP_FILES"
