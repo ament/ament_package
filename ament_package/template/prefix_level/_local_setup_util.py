@@ -480,8 +480,9 @@ def _set(name, value):
 
 def _set_if_unset(name, value):
     if PRIMARY_EXTENSION == 'fish':
-        # Fish: set -q NAME returns 0 if the variable is set.
-        line = 'set -q {name}; or set -gx {name} "{value}"'.format(
+        # Fish: only set when NAME is unset or empty.
+        # `set -q` checks existence; `test -n` checks non-empty value.
+        line = 'set -q {name}; and test -n "${name}"; or set -gx {name} "{value}"'.format(
             name=name, value=value)
     else:
         line = FORMAT_STR_SET_ENV_VAR.format_map(
