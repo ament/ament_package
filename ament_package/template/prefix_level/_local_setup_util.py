@@ -347,7 +347,6 @@ env_state = {}
 
 
 def _append_unique_value(name, value):
-    global env_state
     if name not in env_state:
         if os.environ.get(name):
             env_state[name] = set(os.environ[name].split(os.pathsep))
@@ -369,7 +368,6 @@ def _append_unique_value(name, value):
 
 
 def _prepend_unique_value(name, value):
-    global env_state
     if name not in env_state:
         if os.environ.get(name):
             env_state[name] = set(os.environ[name].split(os.pathsep))
@@ -391,7 +389,6 @@ def _prepend_unique_value(name, value):
 
 
 def _remove_ending_separators():
-    global env_state
     commands = []
     for name in env_state:
         # skip variables that already had values before this script started prepending
@@ -404,7 +401,6 @@ def _remove_ending_separators():
 
 
 def _set(name, value):
-    global env_state
     env_state[name] = value
     line = FORMAT_STR_SET_ENV_VAR.format_map(
         {'name': name, 'value': value})
@@ -412,7 +408,6 @@ def _set(name, value):
 
 
 def _set_if_unset(name, value):
-    global env_state
     line = FORMAT_STR_SET_ENV_VAR.format_map(
         {'name': name, 'value': value})
     if env_state.get(name, os.environ.get(name)):
