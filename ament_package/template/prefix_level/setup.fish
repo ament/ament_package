@@ -17,7 +17,7 @@ set -l _parent_index \
 
 if test -d "$_parent_index"
     for _resource in (command ls "$_parent_index" 2>/dev/null | command sort)
-        set -l _content (command cat "$_parent_index/$_resource" 2>/dev/null)
+        read -z _content < "$_parent_index/$_resource" 2>/dev/null; or set _content ""
         set -l _paths (string split ":" -- "$_content")
         # Reverse the list (similar to setup.sh)
         set -l _reversed
