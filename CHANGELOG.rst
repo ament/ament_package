@@ -2,6 +2,12 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.18.3 (2026-04-08)
+-------------------
+* feat: add support for fish (`#164 <https://github.com/ament/ament_package/issues/164>`_)
+* Fix flake8 (`#163 <https://github.com/ament/ament_package/issues/163>`_)
+* Contributors: Michael Carlstrom, SPeak
+
 0.18.2 (2025-11-28)
 -------------------
 * Remove unneeded deps (`#161 <https://github.com/ament/ament_package/issues/161>`_)
