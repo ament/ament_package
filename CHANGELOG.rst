@@ -2,6 +2,12 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.17.3 (2026-04-08)
+-------------------
+* Remove unneeded deps (`#161 <https://github.com/ament/ament_package/issues/161>`_) (`#162 <https://github.com/ament/ament_package/issues/162>`_)
+* fix setuptools deprecations (`#156 <https://github.com/ament/ament_package/issues/156>`_) (`#158 <https://github.com/ament/ament_package/issues/158>`_)
+* Contributors: mergify[bot]
+
 0.17.2 (2025-04-17)
 -------------------
 * Simplify removing leading and trailing separators (`#152 <https://github.com/ament/ament_package/issues/152>`_)
