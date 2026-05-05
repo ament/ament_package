@@ -2,6 +2,9 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.18.3 (2026-04-08)
 -------------------
 * feat: add support for fish (`#164 <https://github.com/ament/ament_package/issues/164>`_)
