@@ -28,7 +28,7 @@ def get_environment_hook_template_path(name):
 
 
 def get_package_level_template_names(all_platforms=False):
-    names = ['local_setup.%s.in' % ext for ext in [
+    names = [f'local_setup.{ext}.in' for ext in [
         'bash',
         'bat',
         'fish',
@@ -51,8 +51,8 @@ def get_prefix_level_template_names(*, all_platforms=False):
         'sh.in',
         'zsh',
     ]
-    names = ['local_setup.%s' % ext for ext in extensions] + \
-        ['setup.%s' % ext for ext in extensions] + \
+    names = [f'local_setup.{ext}' for ext in extensions] + \
+        [f'setup.{ext}' for ext in extensions] + \
         ['local_setup.fish.in', 'setup.fish'] + \
         ['_local_setup_util.py']
     if not all_platforms:
@@ -75,9 +75,9 @@ def configure_file(template_file, environment):
     :raises: KeyError for placeholders in the template which are not
       in the environment
     """
-    with open(template_file, 'r') as f:
+    with open(template_file, encoding='utf-8') as f:
         template = f.read()
-        return configure_string(template, environment)
+    return configure_string(template, environment)
 
 
 def configure_string(template, environment):

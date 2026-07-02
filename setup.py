@@ -8,9 +8,9 @@ setup(
     version='0.19.0',
     packages=find_packages(exclude=['test']),
     data_files=[
-        ('share/' + package_name, ['package.xml']),
+        (f'share/{package_name}', ['package.xml']),
         ('share/ament_index/resource_index/packages',
-            ['resource/' + package_name]),
+            [f'resource/{package_name}']),
     ],
     zip_safe=True,
     author='Dirk Thomas',

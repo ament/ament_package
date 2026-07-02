@@ -3,7 +3,6 @@
 # Licensed under the Apache License, Version 2.0
 
 import argparse
-from collections import OrderedDict
 import os
 from pathlib import Path
 import sys
@@ -97,7 +96,8 @@ def main(argv=sys.argv[1:]):  # noqa: D103
             "set -gx {name} (string replace --regex ':$' '' -- \"${name}\")"
         )
     else:
-        assert False, 'Unknown primary extension: ' + args.primary_extension
+        raise RuntimeError(
+            f'Unknown primary extension: {args.primary_extension}')
 
     packages = get_packages(Path(__file__).parent)
 
@@ -144,7 +144,7 @@ def get_packages(prefix_path):
 
     # remove unknown dependencies
     pkg_names = set(packages.keys())
-    for k in packages.keys():
+    for k in packages:
         packages[k] = {d for d in packages[k] if d in pkg_names}
 
     return packages
@@ -161,7 +161,7 @@ def add_package_runtime_dependencies(path, packages):
     dependencies = set()
     marker_file = path.parents[1] / 'package_run_dependencies' / path.name
     if marker_file.exists():
-        content = marker_file.read_text()
+        content = marker_file.read_text(encoding='utf-8')
         dependencies = set(content.split(';') if content else [])
     packages[marker_file.name] = dependencies
 
@@ -204,7 +204,7 @@ def reduce_cycle_set(packages):
       dependencies which is modified in place
     """
     last_depended = None
-    while len(packages) > 0:
+    while packages:
         # get all remaining dependencies
         depended = set()
         for pkg_name, dependencies in packages.items():
@@ -256,11 +256,11 @@ def process_dsv_file(
     if _include_comments():
         commands.append(
             FORMAT_STR_COMMENT_LINE.format_map({'comment': dsv_path}))
-    with open(dsv_path, 'r') as h:
+    with open(dsv_path, encoding='utf-8') as h:
         content = h.read()
     lines = content.splitlines()
 
-    basenames = OrderedDict()
+    basenames = {}
     for i, line in enumerate(lines):
         # skip over empty or whitespace-only lines
         if not line.strip():
@@ -272,8 +272,8 @@ def process_dsv_file(
             type_, remainder = line.split(';', 1)
         except ValueError:
             raise RuntimeError(
-                "Line %d in '%s' doesn't contain a semicolon separating the "
-                'type from the arguments' % (i + 1, dsv_path))
+                f"Line {i + 1} in '{dsv_path}' doesn't contain a semicolon "
+                'separating the type from the arguments')
         if type_ != DSV_TYPE_SOURCE:
             # handle non-source lines
             try:
@@ -281,7 +281,7 @@ def process_dsv_file(
                     type_, remainder, prefix)
             except RuntimeError as e:
                 raise RuntimeError(
-                    "Line %d in '%s' %s" % (i + 1, dsv_path, e)) from e
+                    f"Line {i + 1} in '{dsv_path}' {e}") from e
         else:
             # group remaining source lines by basename
             path_without_ext, ext = os.path.splitext(remainder)
@@ -393,14 +393,14 @@ def _append_unique_value(name, value):
         if value not in env_state[name]:
             env_state[name].add(value)
             line = (
-                'contains -- "{value}" ${name}; '
-                'or set -gx {name} ${name} "{value}"'
-            ).format(name=name, value=value)
+                f'contains -- "{value}" ${name}; '
+                f'or set -gx {name} ${name} "{value}"'
+            )
         else:
             if not _include_comments():
                 return []
             line = FORMAT_STR_COMMENT_LINE.format_map(
-                {'comment': 'already in {}: {}'.format(name, value)})
+                {'comment': f'already in {name}: {value}'})
         return [line]
 
     # append even if the variable has not been set yet, in case a shell script sets the
@@ -430,14 +430,14 @@ def _prepend_unique_value(name, value):
         if value not in env_state[name]:
             env_state[name].add(value)
             line = (
-                'contains -- "{value}" ${name}; '
-                'or set -gx {name} "{value}" ${name}'
-            ).format(name=name, value=value)
+                f'contains -- "{value}" ${name}; '
+                f'or set -gx {name} "{value}" ${name}'
+            )
         else:
             if not _include_comments():
                 return []
             line = FORMAT_STR_COMMENT_LINE.format_map(
-                {'comment': 'already in {}: {}'.format(name, value)})
+                {'comment': f'already in {name}: {value}'})
         return [line]
 
     # prepend even if the variable has not been set yet, in case a shell script sets the
@@ -482,8 +482,7 @@ def _set_if_unset(name, value):
     if PRIMARY_EXTENSION == 'fish':
         # Fish: only set when NAME is unset or empty.
         # `set -q` checks existence; `test -n` checks non-empty value.
-        line = 'set -q {name}; and test -n "${name}"; or set -gx {name} "{value}"'.format(
-            name=name, value=value)
+        line = f'set -q {name}; and test -n "${name}"; or set -gx {name} "{value}"'
     else:
         line = FORMAT_STR_SET_ENV_VAR.format_map(
             {'name': name, 'value': value})
