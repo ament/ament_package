@@ -14,13 +14,14 @@
 
 import importlib.util
 from pathlib import Path
+from types import ModuleType
 
 import pytest
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
-def _load(name, relpath):
+def _load(name: str, relpath: str) -> ModuleType:
     # Load a module directly from its file so the tests run without the
     # package being installed, and so the standalone prefix-level template is
     # exercised exactly as it is when shipped into an install prefix.
@@ -32,21 +33,21 @@ def _load(name, relpath):
 
 
 @pytest.fixture
-def templates():
+def templates() -> ModuleType:
     return _load(
         'ament_templates_under_test',
         'ament_package/templates.py')
 
 
 @pytest.fixture
-def util():
+def util() -> ModuleType:
     return _load(
         'local_setup_util_under_test',
         'ament_package/template/prefix_level/_local_setup_util.py')
 
 
 @pytest.fixture
-def util_sh(util):
+def util_sh(util: ModuleType) -> ModuleType:
     # Initialize the module globals to the values the 'sh' branch of main()
     # would set, so the command-emitting helpers can be unit tested directly.
     util.PRIMARY_EXTENSION = 'sh'
