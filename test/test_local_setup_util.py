@@ -16,35 +16,36 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+from types import ModuleType
 
 import pytest
 
 
 # --- topological ordering ---------------------------------------------------
 
-def test_order_packages_linear_chain(util):
+def test_order_packages_linear_chain(util: ModuleType) -> None:
     # c -> b -> a
     packages = {'a': set(), 'b': {'a'}, 'c': {'b'}}
     assert util.order_packages(packages) == ['a', 'b', 'c']
 
 
-def test_order_packages_independent_are_alphabetical(util):
+def test_order_packages_independent_are_alphabetical(util: ModuleType) -> None:
     packages = {'c': set(), 'a': set(), 'b': set()}
     assert util.order_packages(packages) == ['a', 'b', 'c']
 
 
-def test_order_packages_diamond(util):
+def test_order_packages_diamond(util: ModuleType) -> None:
     # d -> {b, c}, both -> a
     packages = {'a': set(), 'b': {'a'}, 'c': {'a'}, 'd': {'b', 'c'}}
     assert util.order_packages(packages) == ['a', 'b', 'c', 'd']
 
 
-def test_order_packages_detects_cycle(util):
+def test_order_packages_detects_cycle(util: ModuleType) -> None:
     with pytest.raises(RuntimeError, match='Circular dependency'):
         util.order_packages({'a': {'b'}, 'b': {'a'}})
 
 
-def test_reduce_cycle_set_keeps_only_cycle_members(util):
+def test_reduce_cycle_set_keeps_only_cycle_members(util: ModuleType) -> None:
     # 'x' is not part of the a <-> b cycle and should be dropped.
     packages = {'a': {'b'}, 'b': {'a'}, 'x': {'a'}}
     util.reduce_cycle_set(packages)
@@ -53,44 +54,44 @@ def test_reduce_cycle_set_keeps_only_cycle_members(util):
 
 # --- package discovery ------------------------------------------------------
 
-def _make_resource_index(prefix):
+def _make_resource_index(prefix: Path) -> Path:
     index = prefix / 'share/ament_index/resource_index'
     (index / 'packages').mkdir(parents=True)
     (index / 'package_run_dependencies').mkdir(parents=True)
     return index
 
 
-def _add_package(index, name, deps=''):
+def _add_package(index: Path, name: str, deps: str = '') -> None:
     (index / 'packages' / name).write_text('', encoding='utf-8')
     (index / 'package_run_dependencies' / name).write_text(
         deps, encoding='utf-8')
 
 
-def test_get_packages_reads_runtime_dependencies(util, tmp_path):
+def test_get_packages_reads_runtime_dependencies(util: ModuleType, tmp_path: Path) -> None:
     index = _make_resource_index(tmp_path)
     _add_package(index, 'foo')
     _add_package(index, 'bar', deps='foo')
     assert util.get_packages(tmp_path) == {'foo': set(), 'bar': {'foo'}}
 
 
-def test_get_packages_strips_unknown_dependencies(util, tmp_path):
+def test_get_packages_strips_unknown_dependencies(util: ModuleType, tmp_path: Path) -> None:
     index = _make_resource_index(tmp_path)
     # 'ghost' has no resource marker, so it must be filtered out.
     _add_package(index, 'bar', deps='ghost')
     assert util.get_packages(tmp_path) == {'bar': set()}
 
 
-def test_get_packages_empty_prefix(util, tmp_path):
+def test_get_packages_empty_prefix(util: ModuleType, tmp_path: Path) -> None:
     assert util.get_packages(tmp_path) == {}
 
 
 # --- command emitting helpers (sh) ------------------------------------------
 
-def test_set_emits_export(util_sh):
+def test_set_emits_export(util_sh: ModuleType) -> None:
     assert util_sh._set('X', '/a') == ['export X="/a"']
 
 
-def test_append_unique_value_dedups(util_sh, monkeypatch):
+def test_append_unique_value_dedups(util_sh: ModuleType, monkeypatch: pytest.MonkeyPatch) -> None:
     sep = os.pathsep
     monkeypatch.delenv('MY_LIST', raising=False)
     assert util_sh._append_unique_value('MY_LIST', '/a') == \
@@ -99,7 +100,7 @@ def test_append_unique_value_dedups(util_sh, monkeypatch):
     assert util_sh._append_unique_value('MY_LIST', '/a') == []
 
 
-def test_prepend_unique_value_dedups(util_sh, monkeypatch):
+def test_prepend_unique_value_dedups(util_sh: ModuleType, monkeypatch: pytest.MonkeyPatch) -> None:
     sep = os.pathsep
     monkeypatch.delenv('MY_LIST', raising=False)
     assert util_sh._prepend_unique_value('MY_LIST', '/a') == \
@@ -107,25 +108,29 @@ def test_prepend_unique_value_dedups(util_sh, monkeypatch):
     assert util_sh._prepend_unique_value('MY_LIST', '/a') == []
 
 
-def test_set_if_unset_sets_when_absent(util_sh, monkeypatch):
+def test_set_if_unset_sets_when_absent(
+    util_sh: ModuleType, monkeypatch: pytest.MonkeyPatch,
+) -> None:
     monkeypatch.delenv('MY_MODE', raising=False)
     assert util_sh._set_if_unset('MY_MODE', 'release') == \
         ['export MY_MODE="release"']
 
 
-def test_set_if_unset_comments_when_already_set(util_sh, monkeypatch):
+def test_set_if_unset_comments_when_already_set(
+    util_sh: ModuleType, monkeypatch: pytest.MonkeyPatch,
+) -> None:
     monkeypatch.setenv('MY_MODE', 'debug')
     assert util_sh._set_if_unset('MY_MODE', 'release') == \
         ['# export MY_MODE="release"']
 
 
-def test_handle_set_type(util_sh, tmp_path):
+def test_handle_set_type(util_sh: ModuleType, tmp_path: Path) -> None:
     assert util_sh.handle_dsv_types_except_source(
         util_sh.DSV_TYPE_SET, 'NAME;value', prefix=str(tmp_path)) == \
         ['export NAME="value"']
 
 
-def test_handle_unknown_type_raises(util_sh, tmp_path):
+def test_handle_unknown_type_raises(util_sh: ModuleType, tmp_path: Path) -> None:
     with pytest.raises(RuntimeError, match='unknown environment hook type'):
         util_sh.handle_dsv_types_except_source(
             'bogus', 'x', prefix=str(tmp_path))
@@ -133,7 +138,7 @@ def test_handle_unknown_type_raises(util_sh, tmp_path):
 
 # --- end to end (run the shipped script standalone) -------------------------
 
-def _write_prefix_with_foo(tmp_path):
+def _write_prefix_with_foo(tmp_path: Path) -> None:
     index = _make_resource_index(tmp_path)
     _add_package(index, 'foo')
     (tmp_path / 'share/foo/bin').mkdir(parents=True)
@@ -143,14 +148,14 @@ def _write_prefix_with_foo(tmp_path):
         encoding='utf-8')
 
 
-def _copy_script(util, tmp_path):
+def _copy_script(util: ModuleType, tmp_path: Path) -> Path:
     script = tmp_path / '_local_setup_util.py'
     script.write_text(
         Path(util.__file__).read_text(encoding='utf-8'), encoding='utf-8')
     return script
 
 
-def test_end_to_end_sh(util, tmp_path):
+def test_end_to_end_sh(util: ModuleType, tmp_path: Path) -> None:
     _write_prefix_with_foo(tmp_path)
     script = _copy_script(util, tmp_path)
     env = {**os.environ, 'AMENT_TRACE_SETUP_FILES': '1'}
@@ -162,7 +167,7 @@ def test_end_to_end_sh(util, tmp_path):
     assert 'MY_PATH' in result.stdout
 
 
-def test_end_to_end_unknown_extension_exits_nonzero(util, tmp_path):
+def test_end_to_end_unknown_extension_exits_nonzero(util: ModuleType, tmp_path: Path) -> None:
     script = _copy_script(util, tmp_path)
     result = subprocess.run(
         [sys.executable, str(script), 'zzz'],

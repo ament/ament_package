@@ -12,35 +12,38 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from pathlib import Path
+from types import ModuleType
+
 import pytest
 
 
-def test_configure_string_substitutes_known_variable(templates):
+def test_configure_string_substitutes_known_variable(templates: ModuleType) -> None:
     assert templates.configure_string('a=@FOO@', {'FOO': 'x'}) == 'a=x'
 
 
-def test_configure_string_unknown_variable_becomes_empty(templates):
+def test_configure_string_unknown_variable_becomes_empty(templates: ModuleType) -> None:
     assert templates.configure_string(
         'a=@FOO@;b=@BAR@', {'FOO': 'x'}) == 'a=x;b='
 
 
-def test_configure_string_without_placeholder_is_passthrough(templates):
+def test_configure_string_without_placeholder_is_passthrough(templates: ModuleType) -> None:
     assert templates.configure_string('no vars here', {}) == 'no vars here'
 
 
-def test_configure_string_repeated_placeholder(templates):
+def test_configure_string_repeated_placeholder(templates: ModuleType) -> None:
     assert templates.configure_string('@A@-@B@-@A@', {'A': '1', 'B': '2'}) \
         == '1-2-1'
 
 
-def test_configure_file_round_trip(templates, tmp_path):
+def test_configure_file_round_trip(templates: ModuleType, tmp_path: Path) -> None:
     template = tmp_path / 'template.in'
     template.write_text('prefix=@P@\n', encoding='utf-8')
     assert templates.configure_file(str(template), {'P': '/opt'}) \
         == 'prefix=/opt\n'
 
 
-def test_get_package_level_template_names_all_platforms(templates):
+def test_get_package_level_template_names_all_platforms(templates: ModuleType) -> None:
     assert templates.get_package_level_template_names(all_platforms=True) == [
         'local_setup.bash.in',
         'local_setup.bat.in',
@@ -50,7 +53,7 @@ def test_get_package_level_template_names_all_platforms(templates):
     ]
 
 
-def test_get_prefix_level_template_names_all_platforms(templates):
+def test_get_prefix_level_template_names_all_platforms(templates: ModuleType) -> None:
     assert templates.get_prefix_level_template_names(all_platforms=True) == [
         'local_setup.bash',
         'local_setup.bat.in',
@@ -66,7 +69,7 @@ def test_get_prefix_level_template_names_all_platforms(templates):
     ]
 
 
-def test_platform_filtering_excludes_bat_on_posix(templates):
+def test_platform_filtering_excludes_bat_on_posix(templates: ModuleType) -> None:
     if templates.IS_WINDOWS:
         pytest.skip('POSIX-only behavior')
     names = templates.get_package_level_template_names(all_platforms=False)
