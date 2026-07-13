@@ -12,6 +12,7 @@ FORMAT_STR_COMMENT_LINE = None
 FORMAT_STR_SET_ENV_VAR = None
 FORMAT_STR_USE_ENV_VAR = None
 FORMAT_STR_INVOKE_SCRIPT = None
+FORMAT_STR_REMOVE_LEADING_SEPARATOR = None
 FORMAT_STR_REMOVE_TRAILING_SEPARATOR = None
 
 # Track primary extension so helpers can apply shell-specific behavior.
@@ -29,7 +30,7 @@ DSV_TYPE_SOURCE = 'source'
 _FISH_LIST_VARS = {'PATH', 'MANPATH', 'CDPATH'}
 
 
-def main(argv=sys.argv[1:]):  # noqa: D103
+def main(argv: list[str] = sys.argv[1:]) -> None:  # noqa: D103
     global FORMAT_STR_COMMENT_LINE
     global FORMAT_STR_SET_ENV_VAR
     global FORMAT_STR_USE_ENV_VAR
@@ -118,7 +119,7 @@ def main(argv=sys.argv[1:]):  # noqa: D103
         print(line)
 
 
-def get_packages(prefix_path):
+def get_packages(prefix_path: Path) -> dict[str, set[str]]:
     """
     Find packages based on ament resource files created during installation.
 
@@ -150,7 +151,9 @@ def get_packages(prefix_path):
     return packages
 
 
-def add_package_runtime_dependencies(path, packages):
+def add_package_runtime_dependencies(
+    path: Path, packages: dict[str, set[str]]
+) -> None:
     """
     Check the path and if it exists extract the packages runtime dependencies.
 
@@ -166,7 +169,7 @@ def add_package_runtime_dependencies(path, packages):
     packages[marker_file.name] = dependencies
 
 
-def order_packages(packages):
+def order_packages(packages: dict[str, set[str]]) -> list[str]:
     """
     Order packages topologically.
 
@@ -196,7 +199,7 @@ def order_packages(packages):
     return ordered
 
 
-def reduce_cycle_set(packages):
+def reduce_cycle_set(packages: dict[str, set[str]]) -> None:
     """
     Reduce the set of packages to the ones part of the circular dependency.
 
@@ -214,20 +217,23 @@ def reduce_cycle_set(packages):
             if name not in depended:
                 del packages[name]
         if last_depended:
-            # if remaining packages haven't changed return them
+            # if the remaining packages haven't changed, stop reducing
             if last_depended == depended:
-                return packages.keys()
+                return
         # otherwise reduce again
         last_depended = depended
 
 
-def _include_comments():
+def _include_comments() -> bool:
     # skipping comment lines when AMENT_TRACE_SETUP_FILES is not set speeds up
     # the processing especially on Windows
     return bool(os.environ.get('AMENT_TRACE_SETUP_FILES'))
 
 
-def get_commands(pkg_name, prefix, primary_extension, additional_extension):
+def get_commands(
+    pkg_name: str, prefix: str, primary_extension: str,
+    additional_extension: str | None,
+) -> list[str]:
     commands = []
     package_dsv_path = os.path.join(prefix, 'share', pkg_name, 'package.dsv')
     if os.path.exists(package_dsv_path):
@@ -250,8 +256,10 @@ def get_commands(pkg_name, prefix, primary_extension, additional_extension):
 
 
 def process_dsv_file(
-    dsv_path, prefix, primary_extension=None, additional_extension=None
-):
+    dsv_path: str, prefix: str,
+    primary_extension: str | None = None,
+    additional_extension: str | None = None,
+) -> list[str]:
     commands = []
     if _include_comments():
         commands.append(
@@ -323,7 +331,9 @@ def process_dsv_file(
     return commands
 
 
-def handle_dsv_types_except_source(type_, remainder, prefix):
+def handle_dsv_types_except_source(
+    type_: str, remainder: str, prefix: str
+) -> list[str]:
     commands = []
     if type_ in (DSV_TYPE_SET, DSV_TYPE_SET_IF_UNSET):
         try:
@@ -378,10 +388,10 @@ def handle_dsv_types_except_source(type_, remainder, prefix):
     return commands
 
 
-env_state = {}
+env_state: dict[str, set[str] | str] = {}
 
 
-def _append_unique_value(name, value):
+def _append_unique_value(name: str, value: str) -> list[str]:
     if name not in env_state:
         if os.environ.get(name):
             env_state[name] = set(os.environ[name].split(os.pathsep))
@@ -418,7 +428,7 @@ def _append_unique_value(name, value):
     return [line]
 
 
-def _prepend_unique_value(name, value):
+def _prepend_unique_value(name: str, value: str) -> list[str]:
     if name not in env_state:
         if os.environ.get(name):
             env_state[name] = set(os.environ[name].split(os.pathsep))
@@ -455,7 +465,7 @@ def _prepend_unique_value(name, value):
     return [line]
 
 
-def _remove_ending_separators():
+def _remove_ending_separators() -> list[str]:
     commands = []
     for name in env_state:
         # skip variables that already had values before this script started prepending
@@ -471,14 +481,14 @@ def _remove_ending_separators():
     return commands
 
 
-def _set(name, value):
+def _set(name: str, value: str) -> list[str]:
     env_state[name] = value
     line = FORMAT_STR_SET_ENV_VAR.format_map(
         {'name': name, 'value': value})
     return [line]
 
 
-def _set_if_unset(name, value):
+def _set_if_unset(name: str, value: str) -> list[str]:
     if PRIMARY_EXTENSION == 'fish':
         # Fish: only set when NAME is unset or empty.
         # `set -q` checks existence; `test -n` checks non-empty value.
@@ -493,7 +503,8 @@ def _set_if_unset(name, value):
 
 if __name__ == '__main__':  # pragma: no cover
     try:
-        rc = main()
+        main()
+        rc = 0
     except RuntimeError as e:
         print(str(e), file=sys.stderr)
         rc = 1

@@ -13,21 +13,22 @@
 # limitations under the License.
 
 from importlib import resources
+from importlib.resources.abc import Traversable
 import os
 import re
 
 IS_WINDOWS = os.name == 'nt'
 
 
-def _get_path(template, name):
+def _get_path(template: str, name: str) -> Traversable:
     return resources.files(template).joinpath(name)
 
 
-def get_environment_hook_template_path(name):
+def get_environment_hook_template_path(name: str) -> Traversable:
     return _get_path('ament_package.template.environment_hook', name)
 
 
-def get_package_level_template_names(all_platforms=False):
+def get_package_level_template_names(all_platforms: bool = False) -> list[str]:
     names = [f'local_setup.{ext}.in' for ext in [
         'bash',
         'bat',
@@ -40,11 +41,11 @@ def get_package_level_template_names(all_platforms=False):
     return names
 
 
-def get_package_level_template_path(name):
+def get_package_level_template_path(name: str) -> Traversable:
     return _get_path('ament_package.template.package_level', name)
 
 
-def get_prefix_level_template_names(*, all_platforms=False):
+def get_prefix_level_template_names(*, all_platforms: bool = False) -> list[str]:
     extensions = [
         'bash',
         'bat.in',
@@ -60,11 +61,13 @@ def get_prefix_level_template_names(*, all_platforms=False):
     return names
 
 
-def get_prefix_level_template_path(name):
+def get_prefix_level_template_path(name: str) -> Traversable:
     return _get_path('ament_package.template.prefix_level', name)
 
 
-def configure_file(template_file, environment):
+def configure_file(
+    template_file: str | os.PathLike[str], environment: dict[str, str]
+) -> str:
     """
     Evaluate a .in template file used in CMake with configure_file.
 
@@ -80,7 +83,7 @@ def configure_file(template_file, environment):
     return configure_string(template, environment)
 
 
-def configure_string(template, environment):
+def configure_string(template: str, environment: dict[str, str]) -> str:
     """
     Substitute variables enclosed by @ characters.
 
@@ -91,7 +94,7 @@ def configure_string(template, environment):
     :raises: KeyError for placeholders in the template which are not
       in the environment
     """
-    def substitute(match):
+    def substitute(match: re.Match[str]) -> str:
         var = match.group(0)[1:-1]
         if var in environment:
             return environment[var]
@@ -99,7 +102,7 @@ def configure_string(template, environment):
     return re.sub(r'\@[a-zA-Z0-9_]+\@', substitute, template)
 
 
-def _is_platform_specific_extension(filename):
+def _is_platform_specific_extension(filename: str) -> bool:
     if filename.endswith('.in'):
         filename = filename[:-3]
     if not IS_WINDOWS and filename.endswith('.bat'):
