@@ -5,7 +5,7 @@ package_name = 'ament_package'
 
 setup(
     name=package_name,
-    version='0.19.0',
+    version='0.19.1',
     packages=find_packages(exclude=['test']),
     data_files=[
         (f'share/{package_name}', ['package.xml']),
