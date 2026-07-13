@@ -2,6 +2,13 @@
 Changelog for package ament_package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.19.1 (2026-07-13)
+-------------------
+* type annotations (`#167 <https://github.com/ament/ament_package/issues/167>`_)
+* Tests coverage (`#166 <https://github.com/ament/ament_package/issues/166>`_)
+* Python 3 modernization (`#165 <https://github.com/ament/ament_package/issues/165>`_)
+* Contributors: Alejandro Hernández Cordero
+
 0.19.0 (2026-05-05)
 -------------------
 
