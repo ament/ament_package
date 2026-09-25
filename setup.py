@@ -29,7 +29,7 @@ setup(
     long_description="""\
 Ament defines metainformation for packages, their dependencies,
 and provides tooling to build these federated packages together.""",
-    license='Apache License, Version 2.0',
+    license='Apache-2.0',
     extras_require={
         'test': [
             'pytest', 'flake8',
