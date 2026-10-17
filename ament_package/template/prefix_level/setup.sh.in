@@ -18,7 +18,7 @@ ament_append_unique_value() {
   #echo "value $_value"
 
   # check if the list contains the value
-  eval _values=\$$_listname
+  eval "_values=\"\${${_listname}-}\""
   _duplicate=
   _ament_append_unique_value_IFS=$IFS
   IFS=":"
@@ -121,7 +121,7 @@ if [ "$AMENT_SHELL" = "zsh" ]; then
 fi
 for _path in $_UNIQUE_PREFIX_PATH; do
   # trace output
-  if [ -n "$AMENT_TRACE_SETUP_FILES" ]; then
+  if [ -n "${AMENT_TRACE_SETUP_FILES:-}" ]; then
     echo "# . \"$_path/local_setup.$AMENT_SHELL\""
   fi
   if [ -f "$_path/local_setup.$AMENT_SHELL" ]; then
