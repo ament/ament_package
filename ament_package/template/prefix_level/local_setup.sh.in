@@ -20,7 +20,7 @@ fi
 # use the Python executable known at configure time
 _ament_python_executable="@ament_package_PYTHON_EXECUTABLE@"
 # allow overriding it with a custom location
-if [ -n "$AMENT_PYTHON_EXECUTABLE" ]; then
+if [ -n "${AMENT_PYTHON_EXECUTABLE:-}" ]; then
   _ament_python_executable="$AMENT_PYTHON_EXECUTABLE"
 fi
 # if the Python executable doesn't exist try another fall back
@@ -38,7 +38,7 @@ fi
 # first argument: the path of the script
 _ament_prefix_sh_source_script() {
   if [ -f "$1" ]; then
-    if [ -n "$AMENT_TRACE_SETUP_FILES" ]; then
+    if [ -n "${AMENT_TRACE_SETUP_FILES:-}" ]; then
       echo "# . \"$1\""
     fi
     . "$1"
@@ -58,7 +58,7 @@ ament_prepend_unique_value() {
   #echo "value $_value"
 
   # check if the list contains the value
-  eval _values=\"\$$_listname\"
+  eval _values=\"\${$_listname:-}\"
   _duplicate=
   _ament_prepend_unique_value_IFS=$IFS
   IFS=":"
@@ -106,10 +106,10 @@ fi
 _ament_ordered_commands="$($_ament_python_executable "$_ament_prefix_sh_AMENT_CURRENT_PREFIX/_local_setup_util.py" sh $_ament_additional_extension)"
 unset _ament_additional_extension
 unset _ament_python_executable
-if [ -n "$AMENT_TRACE_SETUP_FILES" ]; then
+if [ -n "${AMENT_TRACE_SETUP_FILES:-}" ]; then
   echo "_ament_prefix_sh_source_script() {
     if [ -f \"\$1\" ]; then
-      if [ -n \"\$AMENT_TRACE_SETUP_FILES\" ]; then
+      if [ -n \"\${AMENT_TRACE_SETUP_FILES:-}\" ]; then
         echo \"# . \\\"\$1\\\"\"
       fi
       . \"\$1\"

@@ -53,7 +53,7 @@ def util_sh(util: ModuleType) -> ModuleType:
     util.PRIMARY_EXTENSION = 'sh'
     util.FORMAT_STR_COMMENT_LINE = '# {comment}'
     util.FORMAT_STR_SET_ENV_VAR = 'export {name}="{value}"'
-    util.FORMAT_STR_USE_ENV_VAR = '${name}'
+    util.FORMAT_STR_USE_ENV_VAR = '${{{name}:-}}'
     util.FORMAT_STR_REMOVE_LEADING_SEPARATOR = 'export {name}=${{{name}#:}}'
     util.FORMAT_STR_REMOVE_TRAILING_SEPARATOR = 'export {name}=${{{name}%:}}'
     return util
