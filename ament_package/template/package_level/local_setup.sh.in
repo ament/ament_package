@@ -23,7 +23,7 @@ ament_append_value() {
   #echo "value $_value"
 
   # avoid leading separator
-  eval _values=\"\$$_listname\"
+  eval _values=\"\${$_listname:-}\"
   if [ -z "$_values" ]; then
     eval export $_listname=\"$_value\"
     #eval echo "set list \$$_listname"
@@ -53,7 +53,7 @@ ament_append_unique_value() {
   #echo "value $_value"
 
   # check if the list contains the value
-  eval _values=\$$_listname
+  eval _values=\${$_listname:-}
   _duplicate=
   _ament_append_unique_value_IFS=$IFS
   IFS=":"
@@ -104,7 +104,7 @@ ament_prepend_unique_value() {
   #echo "value $_value"
 
   # check if the list contains the value
-  eval _values=\"\$$_listname\"
+  eval _values=\"\${$_listname:-}\"
   _duplicate=
   _ament_prepend_unique_value_IFS=$IFS
   IFS=":"
@@ -165,7 +165,7 @@ if [ -z "$AMENT_RETURN_ENVIRONMENT_HOOKS" ]; then
       # restore IFS before sourcing other files
       IFS=$_package_local_setup_IFS
       # trace output
-      if [ -n "$AMENT_TRACE_SETUP_FILES" ]; then
+      if [ -n "${AMENT_TRACE_SETUP_FILES:-}" ]; then
         echo "# . \"$_hook\""
       fi
       . "$_hook"

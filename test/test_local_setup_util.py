@@ -95,7 +95,7 @@ def test_append_unique_value_dedups(util_sh: ModuleType, monkeypatch: pytest.Mon
     sep = os.pathsep
     monkeypatch.delenv('MY_LIST', raising=False)
     assert util_sh._append_unique_value('MY_LIST', '/a') == \
-        [f'export MY_LIST="$MY_LIST{sep}/a"']
+        [f'export MY_LIST="${{MY_LIST:-}}{sep}/a"']
     # a second identical append is suppressed
     assert util_sh._append_unique_value('MY_LIST', '/a') == []
 
@@ -104,7 +104,7 @@ def test_prepend_unique_value_dedups(util_sh: ModuleType, monkeypatch: pytest.Mo
     sep = os.pathsep
     monkeypatch.delenv('MY_LIST', raising=False)
     assert util_sh._prepend_unique_value('MY_LIST', '/a') == \
-        [f'export MY_LIST="/a{sep}$MY_LIST"']
+        [f'export MY_LIST="/a{sep}${{MY_LIST:-}}"']
     assert util_sh._prepend_unique_value('MY_LIST', '/a') == []
 
 
@@ -165,6 +165,22 @@ def test_end_to_end_sh(util: ModuleType, tmp_path: Path) -> None:
     assert '# Package: foo' in result.stdout
     assert 'export FOO_VAR=' in result.stdout
     assert 'MY_PATH' in result.stdout
+
+
+def test_end_to_end_sh_commands_run_with_nounset(util: ModuleType, tmp_path: Path) -> None:
+    # Scripts that use 'set -u' must be able to source the setup files, so
+    # the generated commands may not read a variable that is still unset.
+    _write_prefix_with_foo(tmp_path)
+    script = _copy_script(util, tmp_path)
+    env = {key: value for key, value in os.environ.items() if key != 'MY_PATH'}
+    commands = subprocess.run(
+        [sys.executable, str(script), 'sh'],
+        capture_output=True, text=True, env=env, check=True).stdout
+    result = subprocess.run(
+        ['sh', '-u', '-c', commands + '\nprintf %s "$MY_PATH"'],
+        capture_output=True, text=True, env=env)
+    assert result.returncode == 0, result.stderr
+    assert result.stdout == str(tmp_path / 'share/foo/bin')
 
 
 def test_end_to_end_unknown_extension_exits_nonzero(util: ModuleType, tmp_path: Path) -> None:

@@ -55,7 +55,7 @@ def main(argv: list[str] = sys.argv[1:]) -> None:  # noqa: D103
     if args.primary_extension == 'sh':
         FORMAT_STR_COMMENT_LINE = '# {comment}'
         FORMAT_STR_SET_ENV_VAR = 'export {name}="{value}"'
-        FORMAT_STR_USE_ENV_VAR = '${name}'
+        FORMAT_STR_USE_ENV_VAR = '${{{name}:-}}'
         FORMAT_STR_INVOKE_SCRIPT = 'AMENT_CURRENT_PREFIX="{prefix}" ' \
             '_ament_prefix_sh_source_script "{script_path}"'
         FORMAT_STR_REMOVE_LEADING_SEPARATOR = 'export {name}=${{{name}#:}}'
